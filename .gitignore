@@ -1,0 +1,7 @@
+notion_credentials.py
+token.json
+credentials.json
+tools/__pycache__/
+tools/notion_credentials.py
+.pytest_cache
+.ipynb_checkpoints/dataMain-checkpoint.ipynb

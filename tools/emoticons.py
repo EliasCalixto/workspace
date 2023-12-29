@@ -1,0 +1,8 @@
+red_emo = '\U0001F310'
+cpu_emo = ''
+gpuemo = '\U0001F530'
+calendar = '\U000023F0'
+money = '\U0001F4B8'
+code = '\U0001F4D5'
+workout = '\U000026BD'
+blue_circle = '\U0001F535'
