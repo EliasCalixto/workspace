@@ -1,18 +1,17 @@
 from datetime import datetime
 from tools.emoticons import *
-from tools.ping import ping
 from tools.moneyStatus import getPercentBlue, getPercentRed
-from tools.notion import get_notion_count
+from tools.notion import get_notion_count, get_notion_summary
 
 
 def monitor():
 
     # last print 
     if get_notion_count() == 0:
-        print(f'[{money}{getPercentBlue()}%/{getPercentRed()}%] {red_emo}{ping()}'.expandtabs(2), end='')
+        print(f'[{money}{getPercentBlue()}%/{getPercentRed()}%]'.expandtabs(2), end='')
         print(f'')
     else:
-        print(f'[{get_notion_count()}] [{money}{getPercentBlue()}%/{getPercentRed()}%] {red_emo}{ping()}'.expandtabs(2), end='')
+        print(f'{notion_emoticon}{get_notion_count()} [{money}{getPercentBlue()}%/{getPercentRed()}%]'.expandtabs(2), end='')
         print(f'')
         
 

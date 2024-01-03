@@ -40,12 +40,11 @@ def get_pages(num_pages=None):
 def get_notion_summary():
     pages = get_pages()
 
-    current_task = ''
+    current_task = []
 
     for page in pages:
         if page['properties']['Status']['status']['name'] == 'Pending':
-            count += 1
-            current_task = page['properties']['Task']['title'][0]['text']['content']
+            current_task.append(page['properties']['Task']['title'][0]['text']['content'])
     
     return current_task
 
