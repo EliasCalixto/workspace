@@ -8,10 +8,10 @@ def monitor():
 
     # last print 
     if get_notion_count() == 0:
-        print(f'{money}{getTotalBlue()}%/{getTotalRed()}%'.expandtabs(2), end='')
+        print(f'[{money}{getTotalBlue()}/{getTotalRed()}]'.expandtabs(2), end='')
         print(f'')
     else:
-        print(f'{notion_emoticon}{get_notion_count()} {money}{getTotalBlue()}%/{getTotalRed()}%'.expandtabs(2), end='')
+        print(f'{notion_emoticon}{get_notion_count()} [{money}{getTotalBlue()} {moneyRed}{getTotalRed()}]'.expandtabs(2), end='')
         print(f'')
         
 
