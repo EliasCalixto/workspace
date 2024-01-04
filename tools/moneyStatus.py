@@ -26,5 +26,10 @@ def getTotalRed():
     totalRed = round(np.sum(currentMonth[4:7]),2)
     return f'{totalRed}'
 
+def getCurrentMoney():
+    currentMonth = getCurrentMonth()
+    currentMoney = round(currentMonth[8],2)
+    return f'{currentMoney}'
+    
 if __name__ == '__main__':
-    print(f'{getTotalBlue()}/{getTotalRed()}')
+    print(f'{getTotalBlue()}/{getTotalRed()}/{getCurrentMoney()}')
