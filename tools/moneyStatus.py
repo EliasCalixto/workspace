@@ -1,23 +1,30 @@
+from anyio import current_effective_deadline
 import numpy as np
 import pandas as pd
 
-try:
-    data_frame = pd.read_excel('..\..\OneDrive\Documentos\Main.xlsx' ,sheet_name='data')
-    allData = np.array(data_frame)
-    totalGastos = (np.sum(allData[:,1:-1]))
-except:
-    print("can't find 'Main.xlsx'")
 
+dataFrame = pd.read_excel('..\\..\\OneDrive\\Documentos\\Main.xlsx' ,sheet_name='data')
+allData = np.array(dataFrame)
 
-def getPercentBlue():
-    totalBlue = (np.sum(allData[:,1:4])) + (np.sum(allData[:,7]))
-    percentBlue = round((totalBlue/totalGastos)*100,2)
-    return f'{percentBlue}'
+def getCurrentMonth():
+    index = 0
 
-def getPercentRed():
-    totalRed = np.sum(allData[:,4:7])
-    percentRed = round((totalRed/totalGastos)*100,2)
-    return f'{percentRed}'
+    while allData[:,0][index] != 0:
+        index += 1
+
+    currentMonth = allData[index-1]
+    
+    return currentMonth
+
+def getTotalBlue():
+    currentMonth = getCurrentMonth()
+    totalBlue = round(np.sum(currentMonth[1:4]),2)
+    return f'{totalBlue}'
+    
+def getTotalRed():
+    currentMonth = getCurrentMonth()
+    totalRed = round(np.sum(currentMonth[4:7]),2)
+    return f'{totalRed}'
 
 if __name__ == '__main__':
-    print(f'{getPercentBlue()}/{getPercentRed()}')
+    print(f'{getTotalBlue()}/{getTotalRed()}')
