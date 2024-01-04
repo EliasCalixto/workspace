@@ -1,5 +1,6 @@
-import pandas as pd
 import os
+import sys
+import pandas as pd
 from tools.caseInitializer import initCase
 
 
@@ -56,24 +57,22 @@ new_BMC_path = "IMPORT 1 BMC Cloud Property.xlsx"
 
 
 if __name__ == "__main__":
-    print('')
-    caseNumber = input('Case: ')
-   
-    initCase(caseNumber, data_comp_export, new_comp_path)
-    initCase(caseNumber, data_cxl_export, new_cxl_path)
-    initCase(caseNumber, data_EQC_export, new_EQC_path)
-    initCase(caseNumber, data_FeeSet_export, new_FeeSet_path)
-    initCase(caseNumber, data_Promotion_export, new_Promotion_path)
-    initCase(caseNumber, data_PSNS_export, new_PSNS_path)
-    initCase(caseNumber, data_RPL_export, new_RPL_path)
-    initCase(caseNumber, data_RTRP1_export, new_RTRP1_path)
-    initCase(caseNumber, data_RTRP2_export, new_RTRP2_path)
-    initCase(caseNumber, data_BMC_import, new_BMC_path)
-    os.mkdir(f'APM files/{caseNumber}/Exports Results')
-    os.mkdir(f'APM files/{caseNumber}/Imports Results')
-        
+    args = []
+    for i,arg in enumerate(sys.argv):
+        args.append(arg)
     
-    print('')
-    print('Ready to work on case.')
-    print('')
-    
+    try:
+        initCase(args[1], data_comp_export, new_comp_path)
+        initCase(args[1], data_cxl_export, new_cxl_path)
+        initCase(args[1], data_EQC_export, new_EQC_path)
+        initCase(args[1], data_FeeSet_export, new_FeeSet_path)
+        initCase(args[1], data_Promotion_export, new_Promotion_path)
+        initCase(args[1], data_PSNS_export, new_PSNS_path)
+        initCase(args[1], data_RPL_export, new_RPL_path)
+        initCase(args[1], data_RTRP1_export, new_RTRP1_path)
+        initCase(args[1], data_RTRP2_export, new_RTRP2_path)
+        initCase(args[1], data_BMC_import, new_BMC_path)
+        os.mkdir(f'APM files/{args[1]}/Exports Results')
+        os.mkdir(f'APM files/{args[1]}/Imports Results')
+    except:
+        pass

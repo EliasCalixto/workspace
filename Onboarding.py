@@ -1,24 +1,25 @@
-from tools.caseInitializer import initCase
 import os
+import sys
 import pandas as pd
-
+from tools.caseInitializer import initCase
 
 removeStopSellingFilePath = 'IMPORT Stop Sell Removal.xlsx'
 
-def ob():
-    print('')
-    caseNumber = input('Case: ')
-    hotelID = input('Hotel ID: ')
-      
-    if hotelID == '':
+def onboarding():
+    args = []
+    
+    for i,arg in enumerate(sys.argv):
+        args.append(arg)
+
+    if len(args) == 2:
         dataFrame = {
             'Hotel ID':[''],
             'SF ID': [''],
             'Stop Sell Property':['No'],
             'Action Type':['Update']
         }
-        initCase(caseNumber, dataFrame, removeStopSellingFilePath)
-        os.mkdir(f'APM files/{caseNumber}/Imports Results')
+        initCase(args[1], dataFrame, removeStopSellingFilePath)
+        os.mkdir(f'APM files/{args[1]}/Imports Results')
         
         #Create ManagedBy File
         dataCsv = {
@@ -29,26 +30,22 @@ def ob():
         # Create a DataFrame from the data
         dfCsv = pd.DataFrame(dataCsv)
         # Specify the file name and path
-        file_pathCsv = f'APM files/{caseNumber}/{caseNumber} UpdateManagedBy.csv'
+        file_pathCsv = f'APM files/{args[1]}/{args[1]} UpdateManagedBy.csv'
         # Write the DataFrame to and Excel file
         dfCsv.to_csv(file_pathCsv, index=False)
         #print(f"ManagedBy.csv file has been created.")
         
-    else:
+    elif len(args) == 3:
         dataFrame = {
-            'Hotel ID':[f'{hotelID}'],
+            'Hotel ID':[f'{args[2]}'],
             'Stop Sell Property':['No'],
             'Action Type':['Update']
         }
-        initCase(caseNumber, dataFrame, removeStopSellingFilePath)
-        os.mkdir(f'APM files/{caseNumber}/Imports Results')
+        initCase(args[1], dataFrame, removeStopSellingFilePath)
+        os.mkdir(f'APM files/{args[1]}/Imports Results')
     
-    
-    print('')
-    print('Ready to work on case.')
-    print('')
-    
-    return caseNumber
+    else:
+        pass
 
 if __name__ == "__main__":
-    ob()
+    onboarding()

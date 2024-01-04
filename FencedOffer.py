@@ -1,4 +1,5 @@
 import os
+import sys
 from tools.caseInitializer import initCase
 from BusinessModelConversion import data_to_json
 
@@ -50,25 +51,24 @@ new_remove_old_promo_path = "IMPORT remove old Promotions.xlsx"
 
 
 if __name__ == "__main__":
-    print('')
-    caseNumber = input('Case: ')
-   
-    initCase(caseNumber, data_comp_export, new_comp_path)
-    initCase(caseNumber, data_promo_export, new_promo_path)
-    initCase(caseNumber, data_PSNS_export, new_PSNS_path)
-    initCase(caseNumber, data_RPL_export, new_RPL_path)
-    initCase(caseNumber, data_RTRPClone_export, new_RTRPClone_path)
-    initCase(caseNumber, data_compensation_import, new_compensationImport_path)
-    initCase(caseNumber, data_promo_import, new_promoImport_path)
-    initCase(caseNumber, data_RPL_import, new_RPLImport_path)
-    initCase(caseNumber, data_rmv_stopsell, new_rmv_stopsell_path)
-    initCase(caseNumber, data_remove_old_pkg, new_remove_old_pkg_path)
-    initCase(caseNumber, data_remove_old_promo, new_remove_old_promo_path)
-    os.mkdir(f'APM files/{caseNumber}/Exports Results')
-    os.mkdir(f'APM files/{caseNumber}/Imports Results')
-        
+    args = []
     
-    print('')
-    print('Ready to work on case.')
-    print('')   
-
+    for i,arg in enumerate(sys.argv):
+        args.append(arg)
+    
+    try:
+        initCase(args[1], data_comp_export, new_comp_path)
+        initCase(args[1], data_promo_export, new_promo_path)
+        initCase(args[1], data_PSNS_export, new_PSNS_path)
+        initCase(args[1], data_RPL_export, new_RPL_path)
+        initCase(args[1], data_RTRPClone_export, new_RTRPClone_path)
+        initCase(args[1], data_compensation_import, new_compensationImport_path)
+        initCase(args[1], data_promo_import, new_promoImport_path)
+        initCase(args[1], data_RPL_import, new_RPLImport_path)
+        initCase(args[1], data_rmv_stopsell, new_rmv_stopsell_path)
+        initCase(args[1], data_remove_old_pkg, new_remove_old_pkg_path)
+        initCase(args[1], data_remove_old_promo, new_remove_old_promo_path)
+        os.mkdir(f'APM files/{args[1]}/Exports Results')
+        os.mkdir(f'APM files/{args[1]}/Imports Results')
+    except:
+        pass

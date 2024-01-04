@@ -1,4 +1,5 @@
 import os
+import sys
 import pandas as pd
 from tools.caseInitializer import initCase
 
@@ -309,24 +310,25 @@ dataEQCimport = {
     'Email AddrLst': ['']
 }
 
-if __name__ == "__main__":  
-    print('')
-    caseNumber = input('Case: ')
-    hotelID = input('Hotel ID: ')
+if __name__ == "__main__":
+    
+    args = []
+    for i,arg in enumerate(sys.argv):
+        args.append(arg)
    
-    if hotelID == '':
-        initCase(caseNumber, dataEQCexport,EQCexportPath)
-        initCase(caseNumber, dataEPCexport,EPCexportPath)
-        initCase(caseNumber, dataPSNSexport, PSandNSexportPath)
-        initCase(caseNumber, dataRTRPexport, RTandRPexportPath)
+    if len(args) == 2:
+        initCase(args[1], dataEQCexport,EQCexportPath)
+        initCase(args[1], dataEPCexport,EPCexportPath)
+        initCase(args[1], dataPSNSexport, PSandNSexportPath)
+        initCase(args[1], dataRTRPexport, RTandRPexportPath)
 
-        initCase(caseNumber, dataPSNSimport, PSandNSimportPath)
-        initCase(caseNumber, dataEPCimport, EPCimportPath)
-        initCase(caseNumber, dataRTRPimport, RTandRPimportPath)
-        initCase(caseNumber, dataEQCimport, EQCimportPath)
+        initCase(args[1], dataPSNSimport, PSandNSimportPath)
+        initCase(args[1], dataEPCimport, EPCimportPath)
+        initCase(args[1], dataRTRPimport, RTandRPimportPath)
+        initCase(args[1], dataEQCimport, EQCimportPath)
 
-        os.mkdir(f'APM files/{caseNumber}/Exports Results')
-        os.mkdir(f'APM files/{caseNumber}/Imports Results')
+        os.mkdir(f'APM files/{args[1]}/Exports Results')
+        os.mkdir(f'APM files/{args[1]}/Imports Results')
         
         #Create ManagedBy File
         dataCsv = {
@@ -337,36 +339,33 @@ if __name__ == "__main__":
         # Create a DataFrame from the data
         dfCsv = pd.DataFrame(dataCsv)
         # Specify the file name and path
-        file_pathCsv = f'APM files/{caseNumber}/{caseNumber} UpdateManagedBy.csv'
+        file_pathCsv = f'APM files/{args[1]}/{args[1]} UpdateManagedBy.csv'
         # Write the DataFrame to and Excel file
         dfCsv.to_csv(file_pathCsv, index=False)
         #print(f"ManagedBy.csv file has been created.")
 
-    else:
-        dataEQCexport['Hotel ID'] = [f'{hotelID}']
-        dataEPCexport['Hotel ID'] = [f'{hotelID}']
-        dataPSNSexport['Hotel ID'] = [f'{hotelID}']
-        dataRTRPexport['Hotel ID'] = [f'{hotelID}']
-        dataPSNSimport['Hotel ID'] = [f'{hotelID}']
-        dataEPCimport['Hotel ID'] = [f'{hotelID}']
-        dataRTRPimport['Hotel ID'] = [f'{hotelID}']
-        dataEQCimport['Hotel ID'] = [f'{hotelID}']
+    elif len(args) == 3:
+        dataEQCexport['Hotel ID'] = [f'{args[2]}']
+        dataEPCexport['Hotel ID'] = [f'{args[2]}']
+        dataPSNSexport['Hotel ID'] = [f'{args[2]}']
+        dataRTRPexport['Hotel ID'] = [f'{args[2]}']
+        dataPSNSimport['Hotel ID'] = [f'{args[2]}']
+        dataEPCimport['Hotel ID'] = [f'{args[2]}']
+        dataRTRPimport['Hotel ID'] = [f'{args[2]}']
+        dataEQCimport['Hotel ID'] = [f'{args[2]}']
         
-        initCase(caseNumber, dataEQCexport,EQCexportPath)
-        initCase(caseNumber, dataEPCexport,EPCexportPath)
-        initCase(caseNumber, dataPSNSexport, PSandNSexportPath)
-        initCase(caseNumber, dataRTRPexport, RTandRPexportPath)
+        initCase(args[1], dataEQCexport,EQCexportPath)
+        initCase(args[1], dataEPCexport,EPCexportPath)
+        initCase(args[1], dataPSNSexport, PSandNSexportPath)
+        initCase(args[1], dataRTRPexport, RTandRPexportPath)
 
-        initCase(caseNumber, dataPSNSimport, PSandNSimportPath)
-        initCase(caseNumber, dataEPCimport, EPCimportPath)
-        initCase(caseNumber, dataRTRPimport, RTandRPimportPath)
-        initCase(caseNumber, dataEQCimport, EQCimportPath)
+        initCase(args[1], dataPSNSimport, PSandNSimportPath)
+        initCase(args[1], dataEPCimport, EPCimportPath)
+        initCase(args[1], dataRTRPimport, RTandRPimportPath)
+        initCase(args[1], dataEQCimport, EQCimportPath)
 
-        os.mkdir(f'APM files/{caseNumber}/Exports Results')
-        os.mkdir(f'APM files/{caseNumber}/Imports Results')
-     
+        os.mkdir(f'APM files/{args[1]}/Exports Results')
+        os.mkdir(f'APM files/{args[1]}/Imports Results')
 
-    print('')
-    print('Ready to work on case.')
-    print('')
-
+    else:
+        pass

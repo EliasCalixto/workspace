@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 
 
-dataFrame = pd.read_excel('..\\..\\OneDrive\\Documentos\\Main.xlsx' ,sheet_name='data')
+dataFrame = pd.read_excel("C:\\Users\\elias\\OneDrive\\Documentos\\Main.xlsx",sheet_name='data')
 allData = np.array(dataFrame)
 
 def getCurrentMonth():

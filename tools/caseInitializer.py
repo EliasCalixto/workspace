@@ -2,7 +2,7 @@ import os
 import pandas as pd
 
 
-def initCase(caseNumber: str, dataFrame: list, filePath: str) -> None:
+def initCase(caseNumber: str, dataFrame, filePath: str) -> None:
     try:
         os.mkdir(f'APM files/{caseNumber}')
         #print('Directory created successfully.')
