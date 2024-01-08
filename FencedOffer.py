@@ -8,10 +8,9 @@ export_promo_path = "Expedia Templates/BMC/BMC2/EXPORT Promotion Export.xlsx"
 export_PSNS_path = "Expedia Templates/BMC/BMC2/EXPORT PS&NS Export_Full.xlsx"
 export_RPL_path = "Expedia Templates/BMC/BMC2/EXPORT RPL Cloud Export.xlsx"
 export_RTRPClone_path = "Expedia Templates/BMC/BMC2/EXPORT RT&RP Cloud Export_Clone.xlsx"
-import_compensation_path = "Expedia Templates/BMC/BMC2/IMPORT 1 Compensation Update.xlsx"
-import_promo_path = "Expedia Templates/BMC/BMC2/IMPORT 2 Promotion Basic MOD Evergreen.xlsx"
-import_RPL_path = "Expedia Templates/BMC/BMC2/IMPORT 4 RPL Cloud Create10%.xlsx"
-import_rmv_stopsell = "Expedia Templates/BMC/BMC2/IMPORT 5 remove Stop-Sell.xlsx"
+import_promo_path = "Expedia Templates/BMC/BMC2/IMPORT 1 Promotion Basic MOD Evergreen.xlsx"
+import_RPL_path = "Expedia Templates/BMC/BMC2/IMPORT 3 RPL Cloud Create10%.xlsx"
+import_rmv_stopsell = "Expedia Templates/BMC/BMC2/IMPORT 4 remove Stop-Sell.xlsx"
 import_remove_old_pkg = "Expedia Templates/BMC/BMC2/IMPORT remove old Packages.xlsx"
 import_remove_old_promo = "Expedia Templates/BMC/BMC2/IMPORT remove old Promotions.xlsx"
 
@@ -30,17 +29,14 @@ new_RPL_path = "EXPORT RPL Cloud Export.xlsx"
 data_RTRPClone_export = data_to_json(export_RTRPClone_path)
 new_RTRPClone_path = "EXPORT RT&RP Cloud Export_Clone.xlsx"
 
-data_compensation_import = data_to_json(import_compensation_path)
-new_compensationImport_path = "IMPORT 1 Compensation Update.xlsx"
-
 data_promo_import = data_to_json(import_promo_path)
-new_promoImport_path = "IMPORT 2 Promotion Basic MOD Evergreen.xlsx"
+new_promoImport_path = "IMPORT 1 Promotion Basic MOD Evergreen.xlsx"
 
 data_RPL_import = data_to_json(import_RPL_path)
-new_RPLImport_path = "IMPORT 4 RPL Cloud Create10%.xlsx"
+new_RPLImport_path = "IMPORT 3 RPL Cloud Create10%.xlsx"
 
 data_rmv_stopsell = data_to_json(import_rmv_stopsell)
-new_rmv_stopsell_path = "IMPORT 5 remove Stop-Sell.xlsx"
+new_rmv_stopsell_path = "IMPORT 4 remove Stop-Sell.xlsx"
 
 data_remove_old_pkg = data_to_json(import_remove_old_pkg)
 new_remove_old_pkg_path = "IMPORT remove old Packages.xlsx"
@@ -62,7 +58,6 @@ if __name__ == "__main__":
         initCase(args[1], data_PSNS_export, new_PSNS_path)
         initCase(args[1], data_RPL_export, new_RPL_path)
         initCase(args[1], data_RTRPClone_export, new_RTRPClone_path)
-        initCase(args[1], data_compensation_import, new_compensationImport_path)
         initCase(args[1], data_promo_import, new_promoImport_path)
         initCase(args[1], data_RPL_import, new_RPLImport_path)
         initCase(args[1], data_rmv_stopsell, new_rmv_stopsell_path)

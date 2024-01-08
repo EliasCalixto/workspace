@@ -15,6 +15,7 @@ export_RPL_path = "Expedia Templates/BMC/BMC1/EXPORT RPL Cloud Export.xlsx"
 export_RTRP_path1 = "Expedia Templates/BMC/BMC1/EXPORT RT&RP Cloud Export_Full.xlsx"
 export_RTRP_path2 = "Expedia Templates/BMC/BMC1/EXPORT RT&RP Cloud Export_RP Info Only.xlsx"
 import_BMC_path = "Expedia Templates/BMC/BMC1/IMPORT 1 BMC Cloud Property.xlsx"
+import_compensation_path = "Expedia Templates/BMC/BMC1/IMPORT 2 Compensation Update.xlsx"
 
 def data_to_json(path):
     df = pd.read_excel(path)
@@ -55,6 +56,8 @@ new_RTRP2_path = "EXPORT RT&RP Cloud Export_RP Info Only.xlsx"
 data_BMC_import = data_to_json(import_BMC_path)
 new_BMC_path = "IMPORT 1 BMC Cloud Property.xlsx"
 
+data_compensation_import = data_to_json(import_compensation_path)
+new_compensationImport_path = "IMPORT 2 Compensation Update.xlsx"
 
 if __name__ == "__main__":
     args = []
@@ -72,6 +75,7 @@ if __name__ == "__main__":
         initCase(args[1], data_RTRP1_export, new_RTRP1_path)
         initCase(args[1], data_RTRP2_export, new_RTRP2_path)
         initCase(args[1], data_BMC_import, new_BMC_path)
+        initCase(args[1], data_compensation_import, new_compensationImport_path)
         os.mkdir(f'APM files/{args[1]}/Exports Results')
         os.mkdir(f'APM files/{args[1]}/Imports Results')
     except:
