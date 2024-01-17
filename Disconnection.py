@@ -247,8 +247,8 @@ dataRTRPexport = {
 
 PSandNSimportPath = 'IMPORT 1 PS&NS - deactivation.xlsx'
 dataPSNSimport = {
-    'Hotel ID': [''],
     'SF ID': [''],
+    'Hotel ID': [''],
     'Action Type': ['Update'],
     'Partner Code': ['Delete'],
     'Responder ID': ['Delete'],
