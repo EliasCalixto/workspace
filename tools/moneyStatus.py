@@ -1,10 +1,13 @@
-from anyio import current_effective_deadline
 import numpy as np
 import pandas as pd
 
 
-dataFrame = pd.read_excel("C:\\Users\\elias\\OneDrive\\Documentos\\Main.xlsx",sheet_name='data')
-allData = np.array(dataFrame)
+try:
+    dataFrame = pd.read_excel("C:\\Users\\elias\\OneDrive\\Documentos\\Main.xlsx", sheet_name='data')
+    allData = np.array(dataFrame)
+except:
+    dataFrame = pd.read_excel("/Users/eliascalixto/Library/CloudStorage/OneDrive-Personal/Documentos/Main.xlsx", sheet_name='data')
+    allData = np.array(dataFrame)
 
 def getCurrentMonth():
     index = 0
