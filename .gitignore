@@ -5,3 +5,6 @@ tools/__pycache__/
 tools/notion_credentials.py
 .pytest_cache
 .ipynb_checkpoints/dataMain-checkpoint.ipynb
+.ipynb_checkpoints/JupyterMonitor-checkpoint.ipynb
+__pycache__/BusinessModelConversion.cpython-311.pyc
+.vscode/settings.json
