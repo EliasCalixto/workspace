@@ -64,4 +64,3 @@ def get_notion_count():
 if __name__ == '__main__':
     print(get_notion_summary())
     print(get_notion_count())
-
