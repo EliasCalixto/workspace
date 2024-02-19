@@ -7,3 +7,4 @@ tools/notion_credentials.py
 .ipynb_checkpoints/JupyterMonitor-checkpoint.ipynb
 __pycache__/BusinessModelConversion.cpython-311.pyc
 .vscode/settings.json
+.DS_Store
