@@ -4,6 +4,6 @@ tools/__pycache__/
 tools/notion_credentials.py
 .pytest_cache
 .ipynb_checkpoints/
-__pycache__/BusinessModelConversion.cpython-311.pyc
-.vscode/settings.json
+__pycache__/
+.vscode/
 .DS_Store
