@@ -3,10 +3,9 @@ import sys
 import pandas as pd
 from tools.caseInitializer import initCase
 
-
+export_ids_path = "Expedia Templates/BMC/BMC1/EXPORT VO-ID Export.xlsx"
 export_comp_path = "Expedia Templates/BMC/BMC1/EXPORT Compensation Cloud Export.xlsx"
 export_cxl_path = "Expedia Templates/BMC/BMC1/EXPORT CXL Cloud Export.xlsx"
-export_EID_path = "Expedia Templates/BMC/BMC1/EXPORT EID Cloud Export.xlsx"
 export_EQC_path = "Expedia Templates/BMC/BMC1/EXPORT EQC Cloud Export.xlsx"
 export_FeeSet_path = "Expedia Templates/BMC/BMC1/EXPORT FeeSet Cloud Export.xlsx"
 export_Promotion_path = "Expedia Templates/BMC/BMC1/EXPORT Promotion Export.xlsx"
@@ -23,14 +22,15 @@ def data_to_json(path):
     
     return data_as_dict
 
+
+data_ids_export = data_to_json(export_ids_path)
+new_ids_path = "EXPORT VO-ID Export.xlsx"
+
 data_comp_export = data_to_json(export_comp_path)
 new_comp_path = "EXPORT Compensation Cloud Export.xlsx"
 
 data_cxl_export = data_to_json(export_cxl_path)
 new_cxl_path = "EXPORT CXL Cloud Export.xlsx"
-
-data_EID_export = data_to_json(export_EID_path)
-new_eid_path = "EXPORT EID Cloud Export.xlsx"
 
 data_EQC_export = data_to_json(export_EQC_path)
 new_EQC_path = "EXPORT EQC Cloud Export.xlsx"
@@ -65,6 +65,7 @@ if __name__ == "__main__":
         args.append(arg)
     
     try:
+        initCase(args[1], data_ids_export, new_ids_path)
         initCase(args[1], data_comp_export, new_comp_path)
         initCase(args[1], data_cxl_export, new_cxl_path)
         initCase(args[1], data_EQC_export, new_EQC_path)
