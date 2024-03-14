@@ -277,8 +277,8 @@ dataPSNSimport = {
 }
 EPCimportPath = 'IMPORT 2 EPC - deactivation.xlsx'
 dataEPCimport = {
-    'Hotel ID': [''],
     'SF ID': [''],
+    'Hotel ID': [''],
     'Account User Name': [''],
     'Account Email Address': [''],
     'Account Security Level': [''],

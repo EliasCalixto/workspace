@@ -3,7 +3,6 @@ import sys
 import pandas as pd
 from tools.caseInitializer import initCase
 
-export_ids_path = "Expedia Templates/BMC/BMC1/EXPORT VO-ID Export.xlsx"
 export_comp_path = "Expedia Templates/BMC/BMC1/EXPORT Compensation Cloud Export.xlsx"
 export_cxl_path = "Expedia Templates/BMC/BMC1/EXPORT CXL Cloud Export.xlsx"
 export_EQC_path = "Expedia Templates/BMC/BMC1/EXPORT EQC Cloud Export.xlsx"
@@ -13,8 +12,10 @@ export_PSNS_path = "Expedia Templates/BMC/BMC1/EXPORT PS&NS Export_Full.xlsx"
 export_RPL_path = "Expedia Templates/BMC/BMC1/EXPORT RPL Cloud Export.xlsx"
 export_RTRP_path1 = "Expedia Templates/BMC/BMC1/EXPORT RT&RP Cloud Export_Full.xlsx"
 export_RTRP_path2 = "Expedia Templates/BMC/BMC1/EXPORT RT&RP Cloud Export_RP Info Only.xlsx"
+export_ids_path = "Expedia Templates/BMC/BMC1/EXPORT VOID Export.xlsx"
 import_BMC_path = "Expedia Templates/BMC/BMC1/IMPORT 1 BMC Cloud Property.xlsx"
 import_compensation_path = "Expedia Templates/BMC/BMC1/IMPORT 2 Compensation Update.xlsx"
+
 
 def data_to_json(path):
     df = pd.read_excel(path)
@@ -22,9 +23,6 @@ def data_to_json(path):
     
     return data_as_dict
 
-
-data_ids_export = data_to_json(export_ids_path)
-new_ids_path = "EXPORT VO-ID Export.xlsx"
 
 data_comp_export = data_to_json(export_comp_path)
 new_comp_path = "EXPORT Compensation Cloud Export.xlsx"
@@ -53,11 +51,15 @@ new_RTRP1_path = "EXPORT RT&RP Cloud Export_Full.xlsx"
 data_RTRP2_export = data_to_json(export_RTRP_path2)
 new_RTRP2_path = "EXPORT RT&RP Cloud Export_RP Info Only.xlsx"
 
+data_ids_export = data_to_json(export_ids_path)
+new_ids_path = "EXPORT VOID Export.xlsx"
+
 data_BMC_import = data_to_json(import_BMC_path)
 new_BMC_path = "IMPORT 1 BMC Cloud Property.xlsx"
 
 data_compensation_import = data_to_json(import_compensation_path)
 new_compensationImport_path = "IMPORT 2 Compensation Update.xlsx"
+
 
 if __name__ == "__main__":
     args = []
