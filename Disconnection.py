@@ -247,33 +247,12 @@ dataRTRPexport = {
 
 PSandNSimportPath = 'IMPORT 1 PS&NS - deactivation.xlsx'
 dataPSNSimport = {
+    'Action Type': ['Update'],
     'SF ID': [''],
     'Hotel ID': [''],
-    'Action Type': ['Update'],
-    'Partner Code': ['Delete'],
-    'Responder ID': ['Delete'],
-    'Chain Code': ['Delete'],
-    'Brand Code': ['Delete'],
-    'Hotel Code': ['Delete'],
     'Stop Sell Property': ['Yes'],
     'Stop Sell Reason': ['Direct Contract to be deactivated'],
     'Projected Stop Sell End Date': ['06/06/2079'],
-    'Group Recon Enabled': ['No'],
-    'TIDS Code': ['Delete'],
-    'Hotel ARI Enabled': ['No'],
-    'Hotel EQC Enabled': ['No'],
-    'Sync Booking Enabled': ['No'],
-    'Primary Notification Method': ['Email'],
-    'Secondary Notification Method': ['Email'],
-    'Email Address': ['x@x.com'],
-    'Fax Country Code': ['Delete'],
-    'Fax Area Code': ['Delete'],
-    'Fax Number': ['Delete'],
-    'Additional Notification Email Address': ['x@x.com'],
-    'Additional Notification Fax Country Code': ['Delete'],
-    'Additional Notification Fax Area Code': ['Delete'],
-    'Additional Notification Fax Number': ['Delete'],
-    'Terminate Independent Agreement': ['Yes']
 }
 EPCimportPath = 'IMPORT 2 EPC - deactivation.xlsx'
 dataEPCimport = {
