@@ -1,0 +1,214 @@
+Provider,Provider Property ID,Expedia ID,,Property Manager,Name,Country Code,Public Code,Reason Codes,Messages,Is Live,Meets Go Live Requirements,Regulatory Compliant,Images,Images Minimum,Images Found,Amenities,Amenities Minimum,Amenities Found,Amenities Missing,Special Check-In Instructions,Property Contact,Business Model,Number of Bedrooms,Number of Bathrooms,Taxes,Property Name,Phone,Geo-Coordinates,Address,Structure Type,Currency,Active Products,Active Products Minimum,Active Products Found,Sufficient Inventory,Sufficient Inventory Minimum,Sufficient Inventory Found
+Avantio,6b92a3b3-7650-4174-b9e7-d2728a3729c6,107403831,107403831,RENTERS,Comfortable Wroclaw Studio by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,16,N/A,,,,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,1
+Avantio,b53c0f84-3529-4600-938b-46ae19719632,107042528,107042528,RENTERS,Gdansk Apartment with Desk by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,20,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,1
+Avantio,aa5fc1a1-5eb9-4858-a3f7-9854d141393c,106994241,106994241,RENTERS,Studio with Swimming Pool by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,19,N/A,,,,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,41
+Avantio,016a532c-4903-4a75-99fb-4bd2d872849c,106804168,106804168,RENTERS,Apartment for 6 in Ochota by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,25,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,25
+Avantio,9afc67f7-31bb-46bf-95c2-10ab96fbaf8f,107454877,107454877,RENTERS,Bright Apartment Gdynia for 4 by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,25,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,1
+Avantio,0ee947d4-0265-436b-ba7b-84a203753320,107403620,107403620,RENTERS,Bel Mare Stylish Apartment by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,24,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,43
+Avantio,e6d24eac-45ac-4795-b58c-f812a8c5d4fd,107301571,107301571,RENTERS,Cozy Apartment with Parking by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,23,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,6
+Avantio,c42d8d40-f0ef-4c75-adcc-f0aacd3a4042,106286427,106286427,RENTERS,Góralski Apartament Zakopane by Renters,POL,OnboardingSucceeded,,,FALSE,FALSE,N/A,TRUE,6,9,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,1,0,FALSE,1,0
+Avantio,cc51fed3-48f8-4938-91d3-9161b077751e,106987020,106987020,RENTERS,Sunny Apartment with Parking by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,40,N/A,,,,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,1
+Avantio,123f343c-9f3a-4d5c-8cba-0ccddbde7e7b,106945938,106945938,RENTERS,Modern Apartment with Parking by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,30,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,34
+Avantio,4ca89dda-795f-455a-9b75-3599a2752f5f,107195656,107195656,RENTERS,Unique Apartment for 5 by Renters,POL,OnboardingSucceeded,,,FALSE,FALSE,N/A,TRUE,6,24,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,1,0,FALSE,1,0
+Avantio,b88ea254-86a6-4961-ba71-964b6b263115,107195470,107195470,RENTERS,Traditional Gdansk Apartment by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,21,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,1
+Avantio,3d2bfbd7-9098-4ff0-984e-685b58c02f80,106026603,106026603,RENTERS,Poniatowskiego Studio by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,26,N/A,,,,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,1
+Avantio,85604282-118d-4756-b863-f5e77d07a098,107046546,107046546,RENTERS,Apartport with Port View by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,30,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,42
+Avantio,3d332e64-f84a-423b-b630-856758a2aea0,107092328,107092328,RENTERS,Sopot Studio with Veranda by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,17,N/A,,,,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,1
+Avantio,81623a0d-d7da-4276-a5e7-cf604ffe7aca,106866606,106866606,RENTERS,Lema Apartment Gdańsk by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,46,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,45
+Avantio,22417fee-4623-4132-95a0-d4ecb6f7573d,107484688,107484688,RENTERS,Szymony Apartment by Renters Prestige,POL,OnboardingSucceeded,,,FALSE,FALSE,N/A,TRUE,6,41,TRUE,13,13,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,1
+Avantio,e575239b-813a-4027-a516-bc835ff5a6f6,106860523,106860523,RENTERS,Apartment with Mountain View by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,20,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,1
+Avantio,ec7189d5-eee4-4fda-b0fb-0266e9707941,107418526,107418526,RENTERS,Exceptional Apartment for 6 by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,21,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,39
+Avantio,0123cf3e-5f24-4f8f-8429-b9cd9f471005,106637680,106637680,RENTERS,Modern Studio Warsaw by Renters Prestige,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,25,N/A,,,,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,44
+Avantio,87b122a3-4e36-443c-a844-fc3bcf9b569b,107284628,107284628,RENTERS,Unique Studio with Garden by Renters,POL,OnboardingSucceeded,,,FALSE,FALSE,N/A,FALSE,6,1,N/A,,,,TRUE,TRUE,TRUE,FALSE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,1,0,FALSE,1,0
+Avantio,d9486f19-04cd-4230-971f-cd9a12e98037,107282790,107282790,RENTERS,Cozy Studio in Łódź by Renters,POL,OnboardingSucceeded,,,FALSE,FALSE,N/A,TRUE,6,20,N/A,,,,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,N/A,TRUE,TRUE,FALSE,TRUE,TRUE,TRUE,1,1,TRUE,1,1
+Avantio,14f76644-442c-4486-9646-66a8168c8a6f,106900113,106900113,RENTERS,Apartment with Parking by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,20,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,38
+Avantio,2800ffa3-0f2b-4bff-a1c1-7325d6713b7e,107212339,107212339,RENTERS,Sun Towers with Parking by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,26,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,28
+Avantio,b9e66e6e-f134-4f8a-a38c-e7978701caab,107211668,107211668,RENTERS,Studio with Bathub in Lodz by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,19,N/A,,,,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,36
+Avantio,044d9460-fcc7-406c-a015-6d2effbf5fa0,107044446,107044446,RENTERS,Warsaw Apartment with Balcony by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,20,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,25
+Avantio,6f16458c-75b5-481b-b550-0d411fc1c7dc,107043363,107043363,RENTERS,Apartport Apartment | AC | by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,45,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,44
+Avantio,2775c08f-4636-44df-8414-e73f8e26024b,106993116,106993116,RENTERS,Two-level Apartment by Renters Prestige,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,20,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,15
+Avantio,80dfc701-286f-4b85-9d09-106709006835,106865862,106865862,RENTERS,Podczele Na Fali Kołobrzeg by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,37,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,35
+Avantio,7465b7b5-1ede-4fb5-8867-f5b8c2d7ee5d,106863594,106863594,RENTERS,Apartment Near Gubałówka by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,21,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,1
+Avantio,9d9efa2f-2ca4-4d86-b602-caf857aeaa4d,107396653,107396653,RENTERS,Tasteful Apartment for 6 by Renters,POL,OnboardingSucceeded,,,FALSE,FALSE,N/A,TRUE,6,23,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,1,0,FALSE,1,0
+Avantio,337afa7f-dc60-4f92-81d1-4ab047ac2b41,107331009,107331009,RENTERS,Warsaw Studio in City Center by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,20,N/A,,,,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,1
+Avantio,262b3583-395e-4428-9f12-8cbcf1a775b7,107299180,107299180,RENTERS,Starowiejska Apartment Gdańsk by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,40,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,1
+Avantio,a63018be-e487-45ef-b59b-ef94f1236df7,106945188,106945188,RENTERS,Family Katowice Apartment by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,20,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,22
+Avantio,cf81b3ff-d9ec-47da-886e-41dafa474135,107281938,107281938,RENTERS,Manganowa Two-level Apartment by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,31,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,31
+Avantio,395326d8-2e4f-4fcc-bbe4-adcddac42320,106944770,106944770,RENTERS,Dietla Apartment with A/C by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,21,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,39
+Avantio,bad7fe50-77d5-4910-94fc-a802f76c3f39,107243846,107243846,RENTERS,Apartment Business Center by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,23,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,45
+Avantio,be396fb0-c3da-4428-a726-0bdc71fc5be8,106900875,106900875,RENTERS,Apartment in a Green Area by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,33,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,29
+Avantio,e52ee438-a20e-498b-a161-163320c4de14,106686051,106686051,RENTERS,Mennica Residence City Center by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,47,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,45
+Avantio,7d833e25-fca1-4c64-a5f3-f1de18831f38,107146906,107146906,RENTERS,Apartment Wrocław by Renters Prestige,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,45,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,36
+Avantio,cc6d7d97-e256-4fe3-98ff-afb087c20e2f,107043383,107043383,RENTERS,Cosy Turquoise Apartment by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,20,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,42
+Avantio,71a2bd0d-0008-4e58-9927-48652b0adf4e,106802131,106802131,RENTERS,Apartament na Alei Pokoju by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,33,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,33
+Avantio,2efde784-7798-4d46-aedf-9d62800d2c4d,107454339,107454339,RENTERS,Two-Storey Apartment Wrocław by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,30,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,1
+Avantio,0257d003-612c-434c-9d34-00c616b92008,106939579,106939579,RENTERS,5th Floor Studio in Katowice by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,20,N/A,,,,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,45
+Avantio,03c89e94-8e12-401c-9a72-c5d63a7941e3,107218094,107218094,RENTERS,Beachside Apartment by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,26,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,14
+Avantio,835c7ca1-fb45-4448-9f36-e93c7448356f,106892976,106892976,RENTERS,Nowa Flotylla Widok na Rzekę by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,34,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,36
+Avantio,a9096ad9-3336-494d-84b7-cb1d7346844c,107168887,107168887,RENTERS,Cosy Studio for 2 by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,21,N/A,,,,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,43
+Avantio,722b2b96-22ce-4ac4-964e-5fffb5a0e5a3,106868045,106868045,RENTERS,Family Apartment with Parking by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,35,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,43
+Avantio,2a7f7026-2a8f-4ef9-8686-9c4dbd0fc532,106663680,106663680,RENTERS,Elegant City Center by Renters Prestige,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,49,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,41
+Avantio,bb7a8e61-7844-493b-bcd7-9eb4e8293b69,105966606,105966606,RENTERS,Cosy Arianska studio by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,11,N/A,,,,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,40
+Avantio,1cf04277-19ce-407a-9621-544bb309891a,107092285,107092285,RENTERS,Studio 8 Minutes to the Beach by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,17,N/A,,,,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,1
+Avantio,e21bd976-96fa-4057-be06-2c7d2ef78196,107421115,107421115,RENTERS,Elegant Apartment for 4 by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,22,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,1
+Avantio,ff5a7e36-e6a4-4943-86c5-45f9539355af,107046480,107046480,RENTERS,Apartport Studio by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,26,N/A,,,,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,38
+Avantio,c9ba20c0-6d15-4cdd-8eb7-8a99fbc015c9,106860206,106860206,RENTERS,Zakopane 3-Bedroom Apartment by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,20,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,1
+Avantio,561a9d8a-0af1-40fb-b693-385c6c8326e3,107170534,107170534,RENTERS,Studio with a View of Warsaw by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,30,N/A,,,,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,36
+Avantio,721cf785-ced5-4a1a-ab75-9c1b77373484,106869335,106869335,RENTERS,Latte Apartament Parking by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,29,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,40
+Avantio,95c924ae-9352-4c6a-8187-302ff059e15e,106987025,106987025,RENTERS,Księcia Witolda by Renters Prestige,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,41,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,41
+Avantio,f18ce36f-f55c-49e5-a9d9-e003364e016c,106957820,106957820,RENTERS,Business Apartment Parking by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,33,N/A,,,,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,40
+Avantio,f5226e7d-2708-440b-acda-bce17cffc472,106957733,106957733,RENTERS,Apartment Warsaw Królewska by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,33,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,42
+Avantio,5b9f3bbb-7e6e-4ae3-b603-fe347ca59114,107212799,107212799,RENTERS,Ludna Apartment Vistula River by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,32,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,41
+Avantio,2c8d43dd-bf21-400b-b3b4-7f0adc0a22ee,107174324,107174324,RENTERS,Apartment at the Market by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,20,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,38
+Avantio,972ea8ee-a2c4-409f-88e0-73f65e8e23c2,106866278,106866278,RENTERS,Blisko Plaży nad Wisłą by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,25,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,45
+Avantio,9c7bbce1-f31e-448b-a6ba-3ec49fc4377f,107480897,107480897,RENTERS,Apartment with parking by Renters,POL,OnboardingSucceeded,,,FALSE,FALSE,N/A,TRUE,6,28,TRUE,13,13,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,1
+Avantio,b4f5b7cf-3386-4040-b81d-621703e1badb,107141719,107141719,RENTERS,Modern Apartment by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,30,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,44
+Avantio,ecb8b73e-5841-457e-a274-fe6b65a9c502,107092345,107092345,RENTERS,Sopot 3 Bedroom Apartment by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,20,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,1
+Avantio,a1dbc7c6-d363-4531-8a0c-74b2b29f3f87,106664572,106664572,RENTERS,City Panorama by Renters Prestige,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,13,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,24
+Avantio,d0718b40-82c9-4143-bdc8-24da4a353cc2,105628280,105628280,RENTERS,Cozy apartment in the center by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,29,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,1
+Avantio,e8d41497-c600-45b6-8620-e8a92ecb8dfe,107046563,107046563,RENTERS,Apartport Apartment with A/C by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,41,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,41
+Avantio,641cfaf5-d4e0-4d93-845c-45a5e4109e15,107329780,107329780,RENTERS,Spacious apartment for 6 by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,19,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,39
+Avantio,6d1e3f7c-0dfa-402d-bdc4-7cf2ce0d364e,106993695,106993695,RENTERS,Sea&Lake 201 with Parking by Renters,POL,OnboardingSucceeded,,,FALSE,FALSE,N/A,TRUE,6,24,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,1,0,FALSE,1,0
+Avantio,b5bc3d75-112d-45d4-a94e-0338d418b179,107170494,107170494,RENTERS,Apartment with Balcony by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,25,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,35
+Avantio,7da6e453-2ba4-44d2-9283-96e080357f0b,106867112,106867112,RENTERS,Kołobrzeg Centrum Pink by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,21,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,32
+Avantio,0ab4c56a-cb94-433d-bb80-8e13f8eef6a5,106103428,106103428,RENTERS,Stylish studio Seredyńskiego by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,23,N/A,,,,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,1
+Avantio,18ef8218-98a3-4916-ab76-7ee16f03890c,105308431,105308431,RENTERS,Fort Wola 12A/89,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,23,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,29
+Avantio,1c16b713-8865-4733-a4b5-f144ebd12d98,106860402,106860402,RENTERS,Apartment Near Beach Gdansk by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,22,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,1
+Avantio,241c4295-8723-4c9b-baab-4577e179b5df,106860398,106860398,RENTERS,Apartment with Sauna and Pool by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,20,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,1
+Avantio,68420168-5f5b-4c4e-91bb-64dc3ce9d0cf,107046255,107046255,RENTERS,Cozy Apartment for 4 by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,19,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,42
+Avantio,5a291ddf-a74f-4efc-91f0-e9e7fe462c53,106993673,106993673,RENTERS,Sea&Lake 209 with Parking by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,31,N/A,,,,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,43
+Avantio,131e918b-4cf7-4624-bbaa-ac837f443039,106801038,106801038,RENTERS,Grójecka Apartment by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,21,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,39
+Avantio,25153456-1446-4ed4-8805-f189be659203,107305482,107305482,RENTERS,Apartment with AC by Renters Prestige,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,32,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,43
+Avantio,c0f61d27-99b4-4960-846b-f8bd3815c798,106989577,106989577,RENTERS,Dabki Apartment By the Beach by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,20,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,23
+Avantio,a8b3a600-4602-486a-9e99-07e67c7ca939,107300361,107300361,RENTERS,17th Floor Gdansk Apartment by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,20,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,1
+Avantio,8a84e4a5-9bc2-486c-b895-63092265050b,106286167,106286167,RENTERS,Wrocław 2 Sypialnie Garaż by Renters,POL,OnboardingSucceeded,,,FALSE,FALSE,N/A,TRUE,6,9,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,FALSE,TRUE,TRUE,FALSE,1,0,FALSE,1,0
+Avantio,e91f4988-e76c-47c1-92b7-64f0f4e41f0f,107298434,107298434,RENTERS,Apartment Łódź with Parking by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,19,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,1
+Avantio,803178c4-cef6-4009-bb15-5c4266267bfb,106947296,106947296,RENTERS,Exceptional Studio for 2 by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,11,N/A,,,,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,43
+Avantio,eefba1c1-cfc1-407f-a965-46e6addb88f5,107279402,107279402,RENTERS,Park Apartament Mariacka by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,32,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,1
+Avantio,452ac675-3185-4316-b59e-2c1e134cf0b9,106541621,106541621,RENTERS,Beżowy Apartament near Center by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,26,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,42
+Avantio,988224b8-84a3-4e63-8e2d-50ce0fb75ec8,106026487,106026487,RENTERS,Studio Poniatowskiego with Parking,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,27,N/A,,,,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,37
+Avantio,96880c34-f27e-49f5-842a-fb2a2ed98f91,107478789,107478789,RENTERS,Steam Park Studio Cracow by Renters,POL,OnboardingSucceeded,,,FALSE,FALSE,N/A,TRUE,6,21,TRUE,13,13,,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,1
+Avantio,d80eeb58-7752-40a2-91df-390de518d669,107067707,107067707,RENTERS,Klifowa Resort Rewal by Renters Prestige,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,53,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,25
+Avantio,eb7e2689-8af8-4eb0-907c-2c2aa12c2837,106831720,106831720,RENTERS,Letnicka Apartment Gdańsk by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,37,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,1
+Avantio,4bc4119e-2e39-4584-9617-1763ec9b9362,107394145,107394145,RENTERS,Cosy Kolobrzeg Apartment by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,21,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,36
+Avantio,44628b8a-d1be-46c5-a4ff-8024d68b297b,106808891,106808891,RENTERS,Wolska Apartment with Parking by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,21,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,37
+Avantio,ecd89e4c-5661-4067-98ae-40441b16665b,107392377,107392377,RENTERS,Studio near Ogród Saski by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,25,N/A,,,,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,1
+Avantio,81761f6b-b602-4e12-9f01-42b7227ee845,106806882,106806882,RENTERS,Poznan Apartment By the Park by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,20,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,40
+Avantio,d18c384e-8b1d-4147-b49b-0ce4ca1c105d,106658262,106658262,RENTERS,Warsaw City Center Apartment by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,24,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,35
+Avantio,e49352ed-c492-4fcb-a83d-09d663b43dcd,106994230,106994230,RENTERS,Air-conditioned Studio for 4 by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,18,N/A,,,,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,42
+Avantio,996e889a-ee23-491a-80c9-d44466e3e8a9,106802056,106802056,RENTERS,Gdansk Apartment with Parking by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,20,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,1
+Avantio,164bcbc0-8a1f-4c8a-8532-3bf75bdf1b4b,106894059,106894059,RENTERS,Ludwiki Apartment by Renters Prestige,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,58,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,33
+Avantio,c5ad0f14-5f02-4614-b630-747c38eeb32c,107151445,107151445,RENTERS,Unique Apartment in Gdańsk by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,25,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,35
+Avantio,836bbb2f-0ce1-4c25-8553-3fbb79497e7c,107484266,107484266,RENTERS,Apartment with Terrace by Renters,POL,OnboardingSucceeded,,,FALSE,FALSE,N/A,TRUE,6,21,TRUE,13,13,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,1
+Avantio,5bce1feb-3ece-493f-ba1b-11f8ecc30138,106861969,106861969,RENTERS,Apartment for 4 Sopot by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,27,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,45
+Avantio,4b8dd37d-d598-4e5c-bcc6-987388548fd3,107095138,107095138,RENTERS,Sopot One Bedroom Apartment by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,16,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,36
+Avantio,f11be257-1869-4d13-81d8-b99e94379102,106860576,106860576,RENTERS,Two-level Zakopane Apartment by Renters,POL,OnboardingSucceeded,,,FALSE,FALSE,N/A,TRUE,6,20,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,FALSE,1,0
+Avantio,c5e0b2a7-2c72-4fd6-b430-09422abb3656,105871408,105871408,RENTERS,WorkSpace with Parking by Renters,POL,OnboardingSucceeded,,,FALSE,TRUE,N/A,TRUE,6,21,N/A,,,,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,N/A,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1,1,TRUE,1,1
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
