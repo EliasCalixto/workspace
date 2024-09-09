@@ -2,12 +2,12 @@ import os
 import pandas as pd
 
 
-def initCase(caseNumber: str, dataFrame, filePath: str) -> None:
+def initCase(caseNumber: int, dataFrame: list, filePath: str) -> None:
     try:
         os.mkdir(f'APM files/{caseNumber}')
-        #print('Directory created successfully.')
+        print('Directory created successfully.')
     except:
-        pass
+        print('Error creating Case Directory')
 
     #Create Excel
     dfFile = pd.DataFrame(dataFrame)

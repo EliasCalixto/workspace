@@ -82,4 +82,4 @@ if __name__ == "__main__":
         os.mkdir(f'APM files/{args[1]}/Exports Results')
         os.mkdir(f'APM files/{args[1]}/Imports Results')
     except:
-        pass
+        print('Does not met arguments requirements, directory not created.')

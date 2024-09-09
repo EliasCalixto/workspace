@@ -347,5 +347,5 @@ if __name__ == "__main__":
         os.mkdir(f'APM files/{args[1]}/Imports Results')
 
     else:
-        print("doesn't met the number of arguments required")
+        print('Does not met arguments requirements, directory not created.')
 

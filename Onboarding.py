@@ -45,7 +45,7 @@ def onboarding():
         os.mkdir(f'APM files/{args[1]}/Imports Results')
     
     else:
-        pass
+        print('Does not met arguments requirements, directory not created.')
 
 if __name__ == "__main__":
     onboarding()
