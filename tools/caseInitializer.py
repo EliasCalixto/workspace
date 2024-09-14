@@ -7,7 +7,7 @@ def initCase(caseNumber: int, dataFrame: list, filePath: str) -> None:
         os.mkdir(f'APM files/{caseNumber}')
         print('Directory created successfully.')
     except:
-        print('Error creating Case Directory')
+        pass
 
     #Create Excel
     dfFile = pd.DataFrame(dataFrame)
