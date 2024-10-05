@@ -290,11 +290,11 @@ dataEQCimport = {
 }
 
 if __name__ == "__main__":
-    
     args = []
+
     for i,arg in enumerate(sys.argv):
         args.append(arg)
-   
+
     if len(args) == 2:
         initCase(args[1], dataEQCexport,EQCexportPath)
         initCase(args[1], dataEPCexport,EPCexportPath)
@@ -308,7 +308,7 @@ if __name__ == "__main__":
 
         os.mkdir(f'APM files/{args[1]}/Exports Results')
         os.mkdir(f'APM files/{args[1]}/Imports Results')
-        
+
         #Create ManagedBy File
         dataCsv = {
             'Account ID': [],
@@ -332,7 +332,7 @@ if __name__ == "__main__":
         dataEPCimport['Hotel ID'] = [f'{args[2]}']
         dataRTRPimport['Hotel ID'] = [f'{args[2]}']
         dataEQCimport['Hotel ID'] = [f'{args[2]}']
-        
+
         initCase(args[1], dataEQCexport,EQCexportPath)
         initCase(args[1], dataEPCexport,EPCexportPath)
         initCase(args[1], dataPSNSexport, PSandNSexportPath)
