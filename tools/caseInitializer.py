@@ -2,17 +2,17 @@ import os
 import pandas as pd
 
 
-def initCase(caseNumber: int, dataFrame: list, filePath: str) -> None:
+def init_case(case_number: int, data_frame: list, file_path: str) -> None:
     try:
-        os.mkdir(f'APM files/{caseNumber}')
+        os.mkdir(f'APM files/{case_number}')
         print('Directory created successfully.')
-    except:
-        pass
+    except Exception as e:
+        print(f'error initializing case: {e}')
 
     #Create Excel
-    dfFile = pd.DataFrame(dataFrame)
-    file_path = f'APM files/{caseNumber}/{caseNumber} {filePath}'
+    df_file = pd.DataFrame(data_frame)
+    file_path = f'APM files/{case_number}/{case_number} {file_path}'
     
-    dfFile.to_excel(file_path, index=False)
+    df_file.to_excel(file_path, index=False)
     #print(f"File '{file_path}' has been created.")
     
