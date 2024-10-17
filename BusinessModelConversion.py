@@ -1,7 +1,7 @@
 import os
 import sys
 import pandas as pd
-from tools.caseInitializer import initCase
+from tools.caseInitializer import init_case
 
 export_comp_path = "Expedia Templates/BMC/BMC1/EXPORT Compensation Cloud Export.xlsx"
 export_cxl_path = "Expedia Templates/BMC/BMC1/EXPORT CXL Cloud Export.xlsx"
@@ -67,18 +67,18 @@ if __name__ == "__main__":
         args.append(arg)
     
     try:
-        initCase(args[1], data_ids_export, new_ids_path)
-        initCase(args[1], data_comp_export, new_comp_path)
-        initCase(args[1], data_cxl_export, new_cxl_path)
-        initCase(args[1], data_EQC_export, new_EQC_path)
-        initCase(args[1], data_FeeSet_export, new_FeeSet_path)
-        initCase(args[1], data_Promotion_export, new_Promotion_path)
-        initCase(args[1], data_PSNS_export, new_PSNS_path)
-        initCase(args[1], data_RPL_export, new_RPL_path)
-        initCase(args[1], data_RTRP1_export, new_RTRP1_path)
-        initCase(args[1], data_RTRP2_export, new_RTRP2_path)
-        initCase(args[1], data_BMC_import, new_BMC_path)
-        initCase(args[1], data_compensation_import, new_compensationImport_path)
+        init_case(args[1], data_ids_export, new_ids_path)
+        init_case(args[1], data_comp_export, new_comp_path)
+        init_case(args[1], data_cxl_export, new_cxl_path)
+        init_case(args[1], data_EQC_export, new_EQC_path)
+        init_case(args[1], data_FeeSet_export, new_FeeSet_path)
+        init_case(args[1], data_Promotion_export, new_Promotion_path)
+        init_case(args[1], data_PSNS_export, new_PSNS_path)
+        init_case(args[1], data_RPL_export, new_RPL_path)
+        init_case(args[1], data_RTRP1_export, new_RTRP1_path)
+        init_case(args[1], data_RTRP2_export, new_RTRP2_path)
+        init_case(args[1], data_BMC_import, new_BMC_path)
+        init_case(args[1], data_compensation_import, new_compensationImport_path)
         os.mkdir(f'APM files/{args[1]}/Exports Results')
         os.mkdir(f'APM files/{args[1]}/Imports Results')
     except:

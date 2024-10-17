@@ -1,7 +1,7 @@
 import os
 import sys
 import pandas as pd
-from tools.caseInitializer import initCase
+from tools.caseInitializer import init_case
 
 removeStopSellingFilePath = 'IMPORT Stop Sell Removal.xlsx'
 
@@ -18,7 +18,7 @@ def onboarding():
             'Stop Sell Property':['No'],
             'Action Type':['Update']
         }
-        initCase(args[1], dataFrame, removeStopSellingFilePath)
+        init_case(args[1], dataFrame, removeStopSellingFilePath)
         os.mkdir(f'APM files/{args[1]}/Imports Results')
         
         #Create ManagedBy File
@@ -41,7 +41,7 @@ def onboarding():
             'Stop Sell Property':['No'],
             'Action Type':['Update']
         }
-        initCase(args[1], dataFrame, removeStopSellingFilePath)
+        init_case(args[1], dataFrame, removeStopSellingFilePath)
         os.mkdir(f'APM files/{args[1]}/Imports Results')
     
     else:

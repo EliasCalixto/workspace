@@ -1,6 +1,6 @@
 import os
 import sys
-from tools.caseInitializer import initCase
+from tools.caseInitializer import init_case
 from BusinessModelConversion import data_to_json
 
 export_comp_path = "Expedia Templates/BMC/BMC2/EXPORT Compensation Cloud Export.xlsx"
@@ -53,16 +53,16 @@ if __name__ == "__main__":
         args.append(arg)
     
     try:
-        initCase(args[1], data_comp_export, new_comp_path)
-        initCase(args[1], data_promo_export, new_promo_path)
-        initCase(args[1], data_PSNS_export, new_PSNS_path)
-        initCase(args[1], data_RPL_export, new_RPL_path)
-        initCase(args[1], data_RTRPClone_export, new_RTRPClone_path)
-        initCase(args[1], data_promo_import, new_promoImport_path)
-        initCase(args[1], data_RPL_import, new_RPLImport_path)
-        initCase(args[1], data_rmv_stopsell, new_rmv_stopsell_path)
-        initCase(args[1], data_remove_old_pkg, new_remove_old_pkg_path)
-        initCase(args[1], data_remove_old_promo, new_remove_old_promo_path)
+        init_case(args[1], data_comp_export, new_comp_path)
+        init_case(args[1], data_promo_export, new_promo_path)
+        init_case(args[1], data_PSNS_export, new_PSNS_path)
+        init_case(args[1], data_RPL_export, new_RPL_path)
+        init_case(args[1], data_RTRPClone_export, new_RTRPClone_path)
+        init_case(args[1], data_promo_import, new_promoImport_path)
+        init_case(args[1], data_RPL_import, new_RPLImport_path)
+        init_case(args[1], data_rmv_stopsell, new_rmv_stopsell_path)
+        init_case(args[1], data_remove_old_pkg, new_remove_old_pkg_path)
+        init_case(args[1], data_remove_old_promo, new_remove_old_promo_path)
         os.mkdir(f'APM files/{args[1]}/Exports Results')
         os.mkdir(f'APM files/{args[1]}/Imports Results')
     except:

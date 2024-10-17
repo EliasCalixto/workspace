@@ -1,7 +1,7 @@
 import os
 import sys
 import pandas as pd
-from tools.caseInitializer import initCase
+from tools.caseInitializer import init_case
 
 
 EQCexportPath = 'EXPORT 4 EQC template.xlsx'
@@ -296,15 +296,15 @@ if __name__ == "__main__":
         args.append(arg)
 
     if len(args) == 2:
-        initCase(args[1], dataEQCexport,EQCexportPath)
-        initCase(args[1], dataEPCexport,EPCexportPath)
-        initCase(args[1], dataPSNSexport, PSandNSexportPath)
-        initCase(args[1], dataRTRPexport, RTandRPexportPath)
+        init_case(args[1], dataEQCexport,EQCexportPath)
+        init_case(args[1], dataEPCexport,EPCexportPath)
+        init_case(args[1], dataPSNSexport, PSandNSexportPath)
+        init_case(args[1], dataRTRPexport, RTandRPexportPath)
 
-        initCase(args[1], dataPSNSimport, PSandNSimportPath)
-        initCase(args[1], dataEPCimport, EPCimportPath)
-        initCase(args[1], dataRTRPimport, RTandRPimportPath)
-        initCase(args[1], dataEQCimport, EQCimportPath)
+        init_case(args[1], dataPSNSimport, PSandNSimportPath)
+        init_case(args[1], dataEPCimport, EPCimportPath)
+        init_case(args[1], dataRTRPimport, RTandRPimportPath)
+        init_case(args[1], dataEQCimport, EQCimportPath)
 
         os.mkdir(f'APM files/{args[1]}/Exports Results')
         os.mkdir(f'APM files/{args[1]}/Imports Results')
@@ -333,15 +333,15 @@ if __name__ == "__main__":
         dataRTRPimport['Hotel ID'] = [f'{args[2]}']
         dataEQCimport['Hotel ID'] = [f'{args[2]}']
 
-        initCase(args[1], dataEQCexport,EQCexportPath)
-        initCase(args[1], dataEPCexport,EPCexportPath)
-        initCase(args[1], dataPSNSexport, PSandNSexportPath)
-        initCase(args[1], dataRTRPexport, RTandRPexportPath)
+        init_case(args[1], dataEQCexport,EQCexportPath)
+        init_case(args[1], dataEPCexport,EPCexportPath)
+        init_case(args[1], dataPSNSexport, PSandNSexportPath)
+        init_case(args[1], dataRTRPexport, RTandRPexportPath)
 
-        initCase(args[1], dataPSNSimport, PSandNSimportPath)
-        initCase(args[1], dataEPCimport, EPCimportPath)
-        initCase(args[1], dataRTRPimport, RTandRPimportPath)
-        initCase(args[1], dataEQCimport, EQCimportPath)
+        init_case(args[1], dataPSNSimport, PSandNSimportPath)
+        init_case(args[1], dataEPCimport, EPCimportPath)
+        init_case(args[1], dataRTRPimport, RTandRPimportPath)
+        init_case(args[1], dataEQCimport, EQCimportPath)
 
         os.mkdir(f'APM files/{args[1]}/Exports Results')
         os.mkdir(f'APM files/{args[1]}/Imports Results')
