@@ -290,7 +290,7 @@ dataEQCimport = {
 }
 
 if __name__ == "__main__":
-    args = []
+    args: list[str] = []
 
     for i,arg in enumerate(sys.argv):
         args.append(arg)
