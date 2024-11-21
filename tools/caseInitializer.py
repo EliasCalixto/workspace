@@ -10,8 +10,8 @@ def init_case(case_number: int, data_frame: list, file_path: str) -> None:
     try:
         os.mkdir(f'APM files/{case_number}')
         print('Directory created successfully.')
-    except Exception as e:
-        print(f'error initializing case: {e}')
+    except:
+        pass
 
     #Create Excel
     df_file = pd.DataFrame(data_frame)
