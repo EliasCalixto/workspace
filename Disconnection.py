@@ -1,7 +1,7 @@
 import os
 import sys
 import pandas as pd
-from tools.caseInitializer import init_case
+from tools.case_initializer import init_case
 
 
 EQCexportPath = 'EXPORT 4 EQC template.xlsx'

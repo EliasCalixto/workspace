@@ -1,7 +1,7 @@
 import os
 import sys
 import pandas as pd
-from tools.caseInitializer import init_case
+from tools.case_initializer import init_case
 
 export_comp_path = "Expedia Templates/BMC/BMC1/EXPORT Compensation Cloud Export.xlsx"
 export_cxl_path = "Expedia Templates/BMC/BMC1/EXPORT CXL Cloud Export.xlsx"

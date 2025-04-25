@@ -1,7 +1,7 @@
 import os
 import sys
-from tools.caseInitializer import init_case
-from BusinessModelConversion import data_to_json
+from tools.case_initializer import init_case
+from bmc import data_to_json
 
 export_comp_path = "Expedia Templates/BMC/BMC2/EXPORT Compensation Cloud Export.xlsx"
 export_promo_path = "Expedia Templates/BMC/BMC2/EXPORT Promotion Export.xlsx"
