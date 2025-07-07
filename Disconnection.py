@@ -296,15 +296,15 @@ if __name__ == "__main__":
         args.append(arg)
 
     if len(args) == 2:
-        init_case(args[1], dataEQCexport,EQCexportPath)
-        init_case(args[1], dataEPCexport,EPCexportPath)
-        init_case(args[1], dataPSNSexport, PSandNSexportPath)
-        init_case(args[1], dataRTRPexport, RTandRPexportPath)
+        init_case(args[1], dataEQCexport,EQCexportPath) # type: ignore
+        init_case(args[1], dataEPCexport,EPCexportPath) # type: ignore
+        init_case(args[1], dataPSNSexport, PSandNSexportPath) # type: ignore
+        init_case(args[1], dataRTRPexport, RTandRPexportPath) # type: ignore
 
-        init_case(args[1], dataPSNSimport, PSandNSimportPath)
-        init_case(args[1], dataEPCimport, EPCimportPath)
-        init_case(args[1], dataRTRPimport, RTandRPimportPath)
-        init_case(args[1], dataEQCimport, EQCimportPath)
+        init_case(args[1], dataPSNSimport, PSandNSimportPath) # type: ignore
+        init_case(args[1], dataEPCimport, EPCimportPath) # type: ignore
+        init_case(args[1], dataRTRPimport, RTandRPimportPath) # type: ignore
+        init_case(args[1], dataEQCimport, EQCimportPath) # type: ignore
 
         os.mkdir(f'APM files/{args[1]}/Exports Results')
         os.mkdir(f'APM files/{args[1]}/Imports Results')
@@ -333,15 +333,15 @@ if __name__ == "__main__":
         dataRTRPimport['Hotel ID'] = [f'{args[2]}']
         dataEQCimport['Hotel ID'] = [f'{args[2]}']
 
-        init_case(args[1], dataEQCexport,EQCexportPath)
-        init_case(args[1], dataEPCexport,EPCexportPath)
-        init_case(args[1], dataPSNSexport, PSandNSexportPath)
-        init_case(args[1], dataRTRPexport, RTandRPexportPath)
+        init_case(args[1], dataEQCexport,EQCexportPath) # type: ignore
+        init_case(args[1], dataEPCexport,EPCexportPath) # type: ignore
+        init_case(args[1], dataPSNSexport, PSandNSexportPath) # type: ignore
+        init_case(args[1], dataRTRPexport, RTandRPexportPath) # type: ignore
 
-        init_case(args[1], dataPSNSimport, PSandNSimportPath)
-        init_case(args[1], dataEPCimport, EPCimportPath)
-        init_case(args[1], dataRTRPimport, RTandRPimportPath)
-        init_case(args[1], dataEQCimport, EQCimportPath)
+        init_case(args[1], dataPSNSimport, PSandNSimportPath) # type: ignore
+        init_case(args[1], dataEPCimport, EPCimportPath) # type: ignore
+        init_case(args[1], dataRTRPimport, RTandRPimportPath) # type: ignore
+        init_case(args[1], dataEQCimport, EQCimportPath) # type: ignore
 
         os.mkdir(f'APM files/{args[1]}/Exports Results')
         os.mkdir(f'APM files/{args[1]}/Imports Results')

@@ -18,7 +18,7 @@ def onboarding():
             'Stop Sell Property':['No'],
             'Action Type':['Update']
         }
-        init_case(args[1], data_frame, remove_stop_selling_file_path)
+        init_case(args[1], data_frame, remove_stop_selling_file_path) # type: ignore
         os.mkdir(f'APM files/{args[1]}/Imports Results')
         
         #Create ManagedBy File
@@ -41,7 +41,7 @@ def onboarding():
             'Stop Sell Property':['No'],
             'Action Type':['Update']
         }
-        init_case(args[1], data_frame, remove_stop_selling_file_path)
+        init_case(args[1], data_frame, remove_stop_selling_file_path) # type: ignore
         os.mkdir(f'APM files/{args[1]}/Imports Results')
     
     else:
