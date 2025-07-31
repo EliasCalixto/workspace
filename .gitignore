@@ -1,11 +1,4 @@
-notion_credentials.py
-
-tools/__pycache__/
-tools/notion_credentials.py
-.pytest_cache
-.ipynb_checkpoints/
-__pycache__/
-.vscode/
-.DS_Store
-.DS_Store
-.DS_Store
+SalesForce/sf_private.py
+__pycache__
+.ipynb_checkpoints
+.virtual_documents
