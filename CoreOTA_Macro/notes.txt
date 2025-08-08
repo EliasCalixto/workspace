@@ -1,0 +1,9 @@
+# script for packing with pyinstaller / do all in Downloads with python3
+
+/Library/Frameworks/Python.framework/Versions/3.13/bin/python3 -m PyInstaller --windowed --name "CoreOTA_Macro" --add-data "renatos_macro_templates:renatos_macro_templates" main.py
+
+
+PENDING:
+1. Clear button
+2. Simple Disconnection Expedia ID change for Hotel ID
+3. Al agregar multiples EIDs pegando de un excel se hace una separación entre cada uno
