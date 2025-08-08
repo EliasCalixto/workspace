@@ -120,7 +120,7 @@ def create_simple_disconnection(
     )
     pd.DataFrame(
         [
-            {"Account ID": hid, "Managed by": account_id}
+            {"Account ID": hid, "Managed by": ""}
             for hid in (list(hotel_ids) or [""])
         ],
         columns=["Account ID", "Managed by"],
