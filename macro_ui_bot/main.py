@@ -57,7 +57,7 @@ def _prefix_name(case_id: str, file_name: str) -> str:
 
 
 def _duplicate_rows(
-    df: pd.DataFrame, hotel_ids: Iterable[str], account_id: str
+    df: pd.DataFrame, hotel_ids: Iterable[str], case_id: str, account_id: str
 ) -> pd.DataFrame:
     """Return a dataframe with one row per hotel id."""
 
@@ -70,7 +70,7 @@ def _duplicate_rows(
             if col in row.index:
                 row[col] = hid
         if "SF ID" in row.index:
-            row["SF ID"] = account_id
+            row["SF ID"] = case_id
         rows.append(row)
     return pd.DataFrame(rows, columns=df.columns)
 
@@ -82,17 +82,20 @@ def create_api_onboarding(
     template_dir = TEMPLATES["API Onboarding"]
 
     df = pd.read_excel(os.path.join(template_dir, "testapiob_Stop Sell Removal.xlsx"))
-    df_out = _duplicate_rows(df, hotel_ids, account_id)
+    df_out = _duplicate_rows(df, hotel_ids, case_id, account_id)
     out_xlsx = os.path.join(
-        dirs["imports"], _prefix_name(case_id, "Stop Sell Removal.xlsx")
+        dirs["case"], _prefix_name(case_id, "Stop Sell Removal.xlsx")
     )
     df_out.to_excel(out_xlsx, index=False)
 
     csv_out = os.path.join(
-        dirs["imports"], _prefix_name(case_id, "UpdateManagedBy.csv")
+        dirs["case"], _prefix_name(case_id, "UpdateManagedBy.csv")
     )
     pd.DataFrame(
-        [{"Account ID": account_id, "Managed by": account_id}],
+        [
+            {"Account ID": hid, "Managed by": account_id}
+            for hid in (list(hotel_ids) or [""])
+        ],
         columns=["Account ID", "Managed by"],
     ).to_csv(csv_out, index=False)
 
@@ -106,17 +109,20 @@ def create_simple_disconnection(
     df = pd.read_excel(
         os.path.join(template_dir, "testsimpledisc_disconnection import.xlsx")
     )
-    df_out = _duplicate_rows(df, hotel_ids, account_id)
+    df_out = _duplicate_rows(df, hotel_ids, case_id, account_id)
     out_xlsx = os.path.join(
-        dirs["imports"], _prefix_name(case_id, "disconnection import.xlsx")
+        dirs["case"], _prefix_name(case_id, "disconnection import.xlsx")
     )
     df_out.to_excel(out_xlsx, index=False)
 
     csv_out = os.path.join(
-        dirs["imports"], _prefix_name(case_id, "delete managedBy.csv")
+        dirs["case"], _prefix_name(case_id, "delete managedBy.csv")
     )
     pd.DataFrame(
-        [{"Account ID": account_id, "Managed by": ""}],
+        [
+            {"Account ID": hid, "Managed by": account_id}
+            for hid in (list(hotel_ids) or [""])
+        ],
         columns=["Account ID", "Managed by"],
     ).to_csv(csv_out, index=False)
 
@@ -129,9 +135,9 @@ def create_bmc_exports(
 
     for template in glob.glob(os.path.join(template_dir, "*.xlsx")):
         df = pd.read_excel(template)
-        df_out = _duplicate_rows(df, hotel_ids, account_id)
+        df_out = _duplicate_rows(df, hotel_ids, case_id, account_id)
         out_xlsx = os.path.join(
-            dirs["exports"], _prefix_name(case_id, os.path.basename(template))
+            dirs["case"], _prefix_name(case_id, os.path.basename(template))
         )
         df_out.to_excel(out_xlsx, index=False)
 
