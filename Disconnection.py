@@ -290,62 +290,48 @@ dataEQCimport = {
 }
 
 if __name__ == "__main__":
-    args: list[str] = []
+    args = sys.argv
 
-    for i,arg in enumerate(sys.argv):
-        args.append(arg)
-
-    if len(args) == 2:
-        init_case(args[1], dataEQCexport,EQCexportPath) # type: ignore
-        init_case(args[1], dataEPCexport,EPCexportPath) # type: ignore
-        init_case(args[1], dataPSNSexport, PSandNSexportPath) # type: ignore
-        init_case(args[1], dataRTRPexport, RTandRPexportPath) # type: ignore
-
-        init_case(args[1], dataPSNSimport, PSandNSimportPath) # type: ignore
-        init_case(args[1], dataEPCimport, EPCimportPath) # type: ignore
-        init_case(args[1], dataRTRPimport, RTandRPimportPath) # type: ignore
-        init_case(args[1], dataEQCimport, EQCimportPath) # type: ignore
-
-        os.mkdir(f'APM files/{args[1]}/Exports Results')
-        os.mkdir(f'APM files/{args[1]}/Imports Results')
-
-        #Create ManagedBy File
-        dataCsv = {
-            'Account ID': [],
-            'Managed by': []
-        }
-
-        # Create a DataFrame from the data
-        dfCsv = pd.DataFrame(dataCsv)
-        # Specify the file name and path
-        file_pathCsv = f'APM files/{args[1]}/{args[1]} UpdateManagedBy.csv'
-        # Write the DataFrame to and Excel file
-        dfCsv.to_csv(file_pathCsv, index=False)
-        #print(f"ManagedBy.csv file has been created.")
-
-    elif len(args) == 3:
-        dataEQCexport['Hotel ID'] = [f'{args[2]}']
-        dataEPCexport['Hotel ID'] = [f'{args[2]}']
-        dataPSNSexport['Hotel ID'] = [f'{args[2]}']
-        dataRTRPexport['Hotel ID'] = [f'{args[2]}']
-        dataPSNSimport['Hotel ID'] = [f'{args[2]}']
-        dataEPCimport['Hotel ID'] = [f'{args[2]}']
-        dataRTRPimport['Hotel ID'] = [f'{args[2]}']
-        dataEQCimport['Hotel ID'] = [f'{args[2]}']
-
-        init_case(args[1], dataEQCexport,EQCexportPath) # type: ignore
-        init_case(args[1], dataEPCexport,EPCexportPath) # type: ignore
-        init_case(args[1], dataPSNSexport, PSandNSexportPath) # type: ignore
-        init_case(args[1], dataRTRPexport, RTandRPexportPath) # type: ignore
-
-        init_case(args[1], dataPSNSimport, PSandNSimportPath) # type: ignore
-        init_case(args[1], dataEPCimport, EPCimportPath) # type: ignore
-        init_case(args[1], dataRTRPimport, RTandRPimportPath) # type: ignore
-        init_case(args[1], dataEQCimport, EQCimportPath) # type: ignore
-
-        os.mkdir(f'APM files/{args[1]}/Exports Results')
-        os.mkdir(f'APM files/{args[1]}/Imports Results')
-
+    if len(args) == 3:
+        case_id, account_id, hotel_id = args[1], args[2], ""
+    elif len(args) == 4:
+        case_id, account_id, hotel_id = args[1], args[2], args[3]
     else:
         print('Does not met arguments requirements, directory not created.')
+        sys.exit()
+
+    for data in (
+        dataEQCexport,
+        dataEPCexport,
+        dataPSNSexport,
+        dataRTRPexport,
+        dataPSNSimport,
+        dataEPCimport,
+        dataRTRPimport,
+        dataEQCimport,
+    ):
+        if 'Hotel ID' in data:
+            data['Hotel ID'] = [hotel_id]
+    for data in (dataPSNSimport, dataEPCimport, dataRTRPimport, dataEQCimport):
+        data['SF ID'] = [case_id]
+
+    init_case(case_id, dataEQCexport, EQCexportPath)  # type: ignore
+    init_case(case_id, dataEPCexport, EPCexportPath)  # type: ignore
+    init_case(case_id, dataPSNSexport, PSandNSexportPath)  # type: ignore
+    init_case(case_id, dataRTRPexport, RTandRPexportPath)  # type: ignore
+
+    init_case(case_id, dataPSNSimport, PSandNSimportPath)  # type: ignore
+    init_case(case_id, dataEPCimport, EPCimportPath)  # type: ignore
+    init_case(case_id, dataRTRPimport, RTandRPimportPath)  # type: ignore
+    init_case(case_id, dataEQCimport, EQCimportPath)  # type: ignore
+
+    os.mkdir(f'APM files/{case_id}/Exports Results')
+    os.mkdir(f'APM files/{case_id}/Imports Results')
+
+    dataCsv = [
+        {'Account ID': hotel_id, 'Managed by': account_id}
+    ]
+    dfCsv = pd.DataFrame(dataCsv)
+    file_pathCsv = f'APM files/{case_id}/{case_id} UpdateManagedBy.csv'
+    dfCsv.to_csv(file_pathCsv, index=False)
 
