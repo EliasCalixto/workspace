@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import glob
 import os
+import re
 from typing import Dict, Iterable, List
 
 import pandas as pd
@@ -110,6 +111,8 @@ def create_simple_disconnection(
         os.path.join(template_dir, "testsimpledisc_disconnection import.xlsx")
     )
     df_out = _duplicate_rows(df, hotel_ids, case_id, account_id)
+    if "Expedia ID" in df_out.columns:
+        df_out.rename(columns={"Expedia ID": "Hotel ID"}, inplace=True)
     out_xlsx = os.path.join(
         dirs["case"], _prefix_name(case_id, "disconnection import.xlsx")
     )
@@ -170,10 +173,17 @@ def main() -> None:  # pragma: no cover - GUI code
 
     tk.Button(root, text="Browse", command=browse).grid(row=3, column=2)
 
+    def clear_fields() -> None:
+        case_entry.delete(0, tk.END)
+        account_entry.delete(0, tk.END)
+        hotels_text.delete("1.0", tk.END)
+        path_var.set("")
+
     def run(option: str) -> None:
         case_id = case_entry.get().strip()
         account_id = account_entry.get().strip()
-        hotels = [h.strip() for h in hotels_text.get("1.0", tk.END).splitlines() if h.strip()]
+        hotels_raw = hotels_text.get("1.0", tk.END).replace("\r", "\n")
+        hotels = [h.strip() for h in hotels_raw.split("\n") if h.strip()]
         base = path_var.get().strip()
 
         if not case_id or not account_id or not base:
@@ -206,7 +216,8 @@ def main() -> None:  # pragma: no cover - GUI code
     tk.Button(
         button_frame, text="BMC Exports", command=lambda: run("BMC Exports")
     ).grid(row=0, column=2, padx=5)
-    tk.Button(button_frame, text="Quit", command=root.destroy).grid(row=0, column=3, padx=5)
+    tk.Button(button_frame, text="Clear", command=clear_fields).grid(row=0, column=3, padx=5)
+    tk.Button(button_frame, text="Quit", command=root.destroy).grid(row=0, column=4, padx=5)
 
     root.columnconfigure(1, weight=1)
     root.mainloop()
