@@ -161,6 +161,24 @@ def main() -> None:  # pragma: no cover - GUI code
     hotels_text = tk.Text(root, height=5, width=30)
     hotels_text.grid(row=2, column=1, sticky="we")
 
+    def load_hotels_from_excel() -> None:
+        """Load hotel IDs from an Excel file into the text box."""
+        path = filedialog.askopenfilename(
+            filetypes=[("Excel files", "*.xlsx *.xls")]
+        )
+        if path:
+            try:
+                df = pd.read_excel(path, header=0)
+                ids = [str(v).strip() for v in df.iloc[:, 0].dropna()]
+                hotels_text.delete("1.0", tk.END)
+                hotels_text.insert("1.0", "\n".join(ids))
+            except Exception as exc:
+                messagebox.showerror("Error", f"Failed to load IDs: {exc}")
+
+    tk.Button(
+        root, text="Load from Excel", command=load_hotels_from_excel
+    ).grid(row=2, column=2, padx=5, sticky="nw")
+
     tk.Label(root, text="Destination Path:").grid(row=3, column=0, sticky="e")
     path_var = tk.StringVar()
     path_entry = tk.Entry(root, textvariable=path_var, width=40)
