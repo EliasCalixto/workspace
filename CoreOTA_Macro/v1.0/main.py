@@ -35,6 +35,10 @@ TEMPLATES: Dict[str, str] = {
     "BMC Exports": os.path.join(ROOT_DIR, "renatos_macro_templates", "bmc exports"),
 }
 
+BG_COLOR = "#e1f3db"
+ACCENT_COLOR = "#217346"
+LOGO_FILE = os.path.join(ROOT_DIR, "logo.ppm")
+
 
 def _prepare_case_dir(base_path: str, case_id: str) -> Dict[str, str]:
     """Create case directory and the required sub-folders."""
@@ -145,35 +149,59 @@ def create_bmc_exports(
 def main() -> None:  # pragma: no cover - GUI code
     root = tk.Tk()
     root.title("Macro UI Bot")
+    root.geometry("600x400")
+    root.configure(bg=BG_COLOR)
 
-    tk.Label(root, text="SF Case ID:").grid(row=0, column=0, sticky="e")
+    try:
+        logo_img = tk.PhotoImage(file=LOGO_FILE)
+        root.iconphoto(True, logo_img)
+        tk.Label(root, image=logo_img, bg=BG_COLOR).grid(
+            row=0, column=0, columnspan=3, pady=(10, 20)
+        )
+        root.logo_img = logo_img  # keep reference
+    except tk.TclError:
+        pass
+
+    tk.Label(root, text="SF Case ID:", bg=BG_COLOR).grid(row=1, column=0, sticky="e")
     case_entry = tk.Entry(root)
-    case_entry.grid(row=0, column=1, sticky="we")
+    case_entry.grid(row=1, column=1, sticky="we")
 
-    tk.Label(root, text="SF Account ID:").grid(row=1, column=0, sticky="e")
+    tk.Label(root, text="SF Account ID:", bg=BG_COLOR).grid(row=2, column=0, sticky="e")
     account_entry = tk.Entry(root)
-    account_entry.grid(row=1, column=1, sticky="we")
+    account_entry.grid(row=2, column=1, sticky="we")
 
-    tk.Label(root, text="Hotel IDs (one per line):").grid(row=2, column=0, sticky="ne")
+    tk.Label(root, text="Hotel IDs (one per line):", bg=BG_COLOR).grid(
+        row=3, column=0, sticky="ne"
+    )
     hotels_text = tk.Text(root, height=5, width=30)
-    hotels_text.grid(row=2, column=1, sticky="we")
+    hotels_text.grid(row=3, column=1, sticky="we")
 
-    tk.Label(root, text="Destination Path:").grid(row=3, column=0, sticky="e")
+    tk.Label(root, text="Destination Path:", bg=BG_COLOR).grid(row=4, column=0, sticky="e")
     path_var = tk.StringVar()
     path_entry = tk.Entry(root, textvariable=path_var, width=40)
-    path_entry.grid(row=3, column=1, sticky="we")
+    path_entry.grid(row=4, column=1, sticky="we")
 
     def browse() -> None:
         path = filedialog.askdirectory()
         if path:
             path_var.set(path)
 
-    tk.Button(root, text="Browse", command=browse).grid(row=3, column=2)
+    tk.Button(
+        root,
+        text="Browse",
+        command=browse,
+        bg=ACCENT_COLOR,
+        fg="white",
+        activebackground="#1a5e30",
+        activeforeground="white",
+    ).grid(row=4, column=2)
 
     def run(option: str) -> None:
         case_id = case_entry.get().strip()
         account_id = account_entry.get().strip()
-        hotels = [h.strip() for h in hotels_text.get("1.0", tk.END).splitlines() if h.strip()]
+        hotels = [
+            h.strip() for h in hotels_text.get("1.0", tk.END).splitlines() if h.strip()
+        ]
         base = path_var.get().strip()
 
         if not case_id or not account_id or not base:
@@ -193,20 +221,29 @@ def main() -> None:  # pragma: no cover - GUI code
         except Exception as exc:  # pragma: no cover - safety net for GUI
             messagebox.showerror("Error", str(exc))
 
-    button_frame = tk.Frame(root)
-    button_frame.grid(row=4, column=0, columnspan=3, pady=10)
+    button_frame = tk.Frame(root, bg=BG_COLOR)
+    button_frame.grid(row=5, column=0, columnspan=3, pady=10)
+    btn_opts = {
+        "bg": ACCENT_COLOR,
+        "fg": "white",
+        "activebackground": "#1a5e30",
+        "activeforeground": "white",
+    }
     tk.Button(
-        button_frame, text="API Onboarding", command=lambda: run("API Onboarding")
+        button_frame, text="API Onboarding", command=lambda: run("API Onboarding"), **btn_opts
     ).grid(row=0, column=0, padx=5)
     tk.Button(
         button_frame,
         text="Simple Disconnection",
         command=lambda: run("Simple Disconnection"),
+        **btn_opts,
     ).grid(row=0, column=1, padx=5)
     tk.Button(
-        button_frame, text="BMC Exports", command=lambda: run("BMC Exports")
+        button_frame, text="BMC Exports", command=lambda: run("BMC Exports"), **btn_opts
     ).grid(row=0, column=2, padx=5)
-    tk.Button(button_frame, text="Quit", command=root.destroy).grid(row=0, column=3, padx=5)
+    tk.Button(button_frame, text="Quit", command=root.destroy, **btn_opts).grid(
+        row=0, column=3, padx=5
+    )
 
     root.columnconfigure(1, weight=1)
     root.mainloop()
