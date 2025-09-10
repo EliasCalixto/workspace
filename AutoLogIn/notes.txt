@@ -1,4 +1,4 @@
 1. Quiero que me ayudes a crear un app en python que controle mi mouse y marque login por mi en una pagina del trabajo, en el archivo screenshot1.png puedes ver como es y en donde tienes que hacer click para hacer login.
 2. Este proceso consta de 3 pasos asi que te mandare capturas para que puedas seguirlos en ese orden.
 3. Quiero poder ejecutar este script y que haga que mi pantalla se quede prendida todo el tiemp que se este ejecutando y que ademas cuando detecte la hora de Lima Peru que sea 7:29am marque la entrada.
-
+4. En los Screenshots padres ver un ejemplo pero para logout yo quiero para login

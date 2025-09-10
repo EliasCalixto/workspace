@@ -1,0 +1,7 @@
+Add your cropped reference images here:
+- step1_menu.png
+- step2_login.png
+- step3_submit.png
+
+These should be small crops of the actual UI elements to click. See README.md for details.
+
