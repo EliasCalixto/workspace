@@ -149,21 +149,17 @@ def main() -> None:  # pragma: no cover - GUI code
     root = tk.Tk()
     root.title("Macro UI Bot")
 
-    logo_img = tk.PhotoImage(file=os.path.join(ROOT_DIR, "logo.ppm"))
-    tk.Label(root, image=logo_img).grid(row=0, column=0, columnspan=3, pady=5)
-    root.logo = logo_img
-
-    tk.Label(root, text="SF Case ID:").grid(row=1, column=0, sticky="e")
+    tk.Label(root, text="SF Case ID:").grid(row=0, column=0, sticky="e")
     case_entry = tk.Entry(root)
-    case_entry.grid(row=1, column=1, sticky="we")
+    case_entry.grid(row=0, column=1, sticky="we")
 
-    tk.Label(root, text="SF Account ID:").grid(row=2, column=0, sticky="e")
+    tk.Label(root, text="SF Account ID:").grid(row=1, column=0, sticky="e")
     account_entry = tk.Entry(root)
-    account_entry.grid(row=2, column=1, sticky="we")
+    account_entry.grid(row=1, column=1, sticky="we")
 
-    tk.Label(root, text="Hotel IDs (one per line):").grid(row=3, column=0, sticky="ne")
+    tk.Label(root, text="Hotel IDs (one per line):").grid(row=2, column=0, sticky="ne")
     hotels_text = tk.Text(root, height=5, width=30)
-    hotels_text.grid(row=3, column=1, sticky="we")
+    hotels_text.grid(row=2, column=1, sticky="we")
 
     def load_hotels_from_excel() -> None:
         """Load hotel IDs from an Excel file into the text box."""
@@ -181,19 +177,19 @@ def main() -> None:  # pragma: no cover - GUI code
 
     tk.Button(
         root, text="Load from Excel", command=load_hotels_from_excel
-    ).grid(row=3, column=2, padx=5, sticky="nw")
+    ).grid(row=2, column=2, padx=5, sticky="nw")
 
-    tk.Label(root, text="Destination Path:").grid(row=4, column=0, sticky="e")
+    tk.Label(root, text="Destination Path:").grid(row=3, column=0, sticky="e")
     path_var = tk.StringVar()
     path_entry = tk.Entry(root, textvariable=path_var, width=40)
-    path_entry.grid(row=4, column=1, sticky="we")
+    path_entry.grid(row=3, column=1, sticky="we")
 
     def browse() -> None:
         path = filedialog.askdirectory()
         if path:
             path_var.set(path)
 
-    tk.Button(root, text="Browse", command=browse).grid(row=4, column=2)
+    tk.Button(root, text="Browse", command=browse).grid(row=3, column=2)
 
     def clear_fields() -> None:
         case_entry.delete(0, tk.END)
@@ -226,7 +222,7 @@ def main() -> None:  # pragma: no cover - GUI code
             messagebox.showerror("Error", str(exc))
 
     button_frame = tk.Frame(root)
-    button_frame.grid(row=5, column=0, columnspan=3, pady=10)
+    button_frame.grid(row=4, column=0, columnspan=3, pady=10)
     tk.Button(
         button_frame, text="API Onboarding", command=lambda: run("API Onboarding")
     ).grid(row=0, column=0, padx=5)

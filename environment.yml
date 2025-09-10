@@ -1,0 +1,20 @@
+name: workspace
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pandas
+  - numpy
+  - matplotlib
+  - seaborn
+  - scikit-learn
+  - scipy
+  - openpyxl       # para Excel
+  - xlrd           # lectura de Excel antiguos
+  - sqlalchemy     # conexión a BD
+  - requests       # HTTP
+  - jupyterlab     # notebooks
+  - ipykernel
+  - rich           # mejor salida en consola
+  - tqdm           # barras de progreso
