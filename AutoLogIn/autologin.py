@@ -79,7 +79,7 @@ class ScreenAwake:
             def _tick():
                 # Call every ~50s to maintain state
                 while not self._stop.is_set():
-                    ctypes.windll.kernel32.SetThreadExecutionState(
+                    ctypes.windll.kernel32.SetThreadExecutionState( # type: ignore
                         ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_DISPLAY_REQUIRED | ES_AWAYMODE_REQUIRED
                     )
                     self._stop.wait(50)
@@ -113,24 +113,46 @@ class ScreenAwake:
 def click_image(path: str, timeout: float = 30.0, confidence: float = 0.8, move_duration: float = 0.15) -> bool:
     """Locate an image on screen and click its center.
 
+    - Uses OpenCV confidence matching if available.
+    - Falls back to exact match (no confidence) when OpenCV is missing.
     Returns True if clicked, False otherwise.
-    Requires OpenCV for confidence matching.
     """
     import pyautogui
+
+    try:
+        import cv2  # type: ignore  # noqa: F401
+        has_cv = True
+    except Exception:
+        has_cv = False
 
     start = time.time()
     last_err: Exception | None = None
     while time.time() - start < timeout:
         try:
-            location = pyautogui.locateCenterOnScreen(path, confidence=confidence, grayscale=True)
+            if has_cv:
+                location = pyautogui.locateCenterOnScreen(path, confidence=confidence, grayscale=True)
+            else:
+                # Confidence/grayscale parameters require OpenCV; try exact match first.
+                location = pyautogui.locateCenterOnScreen(path)
+                if location is None:
+                    # Some environments may still support grayscale without cv2; try as a secondary attempt
+                    try:
+                        location = pyautogui.locateCenterOnScreen(path, grayscale=True)  # type: ignore[arg-type]
+                    except TypeError:
+                        # Older pyautogui may raise when grayscale used without cv2 — ignore and continue
+                        pass
+
             if location:
                 pyautogui.moveTo(location.x, location.y, duration=move_duration)
                 pyautogui.click()
                 return True
-        except Exception as e:  # Likely OpenCV not available or permissions missing
+        except Exception as e:
             last_err = e
             time.sleep(0.5)
         time.sleep(0.4)
+
+    if not has_cv:
+        print(f"[warn] OpenCV not installed; using exact match for '{path}'. If it fails, install OpenCV or retake the image at the same scale.")
     if last_err:
         print(f"[warn] click_image('{path}') last error: {last_err}")
     return False
@@ -193,7 +215,7 @@ def main(argv=None) -> int:
                         help="Local time in HH:MM for America/Lima (default 07:29)")
     parser.add_argument("--tz", default="America/Lima", dest="tz_name",
                         help="IANA timezone name (default America/Lima)")
-    parser.add_argument("--images", default="AutoLogIn", dest="images_dir",
+    parser.add_argument("--images", default="/Users/darkesthj/Dev/workspace/autologin", dest="images_dir",
                         help="Directory containing step images (default AutoLogIn)")
     parser.add_argument("--slow", type=float, default=0.2, dest="slow",
                         help="Pause between PyAutoGUI actions (default 0.2s)")
@@ -227,4 +249,3 @@ def main(argv=None) -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-
