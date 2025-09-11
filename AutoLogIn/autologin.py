@@ -159,12 +159,13 @@ def click_image(path: str, timeout: float = 30.0, confidence: float = 0.8, move_
 
 
 def perform_login(images_dir: str, slow: float) -> bool:
-    """Performs the 3-click login flow using provided reference images.
+    """Performs the login flow using provided reference images.
 
-    Expected files inside `images_dir`:
-      - step1_menu.png   : user/profile menu button (top-right)
-      - step2_login.png  : 'Log In' (or similar) menu item
-      - step3_submit.png : 'Submit' button on the modal
+    Standard flow (3–4 clicks):
+      - step1_menu.png     : user/profile menu button (top-right)
+      - step2_login.png    : 'Log In' (or similar) menu item
+      - step3_login2.png   : OPTIONAL blue re-login button if the session expired
+      - step4_submit.png   : 'Submit' button on the modal (or legacy step3_submit.png)
     """
     import pyautogui
 
@@ -173,7 +174,13 @@ def perform_login(images_dir: str, slow: float) -> bool:
 
     s1 = f"{images_dir}/step1_menu.png"
     s2 = f"{images_dir}/step2_login.png"
-    s3 = f"{images_dir}/step3_submit.png"
+    s3_optional = f"{images_dir}/step3_login2.png"  # optional blue login button
+
+    # Final submit can be either step4_submit.png (new) or step3_submit.png (legacy)
+    import os
+    s_submit_new = f"{images_dir}/step4_submit.png"
+    s_submit_legacy = f"{images_dir}/step3_submit.png"
+    s_submit = s_submit_new if os.path.exists(s_submit_new) else s_submit_legacy
 
     print("[info] Step 1: open menu…")
     if not click_image(s1, timeout=25):
@@ -185,12 +192,18 @@ def perform_login(images_dir: str, slow: float) -> bool:
         print("[error] Could not find step2_login.png on screen")
         return False
 
-    print("[info] Waiting modal…")
-    time.sleep(1.0)
+    # Some sessions require an extra blue 'Log In' click due to inactivity
+    print("[info] Step 3 (optional): re-login if requested…")
+    clicked_optional = click_image(s3_optional, timeout=8)
+    if clicked_optional:
+        print("[info] Optional re-login clicked; waiting for modal…")
+        time.sleep(1.0)
+    else:
+        print("[info] Optional re-login not shown; continuing…")
 
-    print("[info] Step 3: submit…")
-    if not click_image(s3, timeout=30):
-        print("[error] Could not find step3_submit.png on screen")
+    print("[info] Step 4: submit…")
+    if not click_image(s_submit, timeout=30):
+        print(f"[error] Could not find submit button image on screen ({os.path.basename(s_submit)})")
         return False
 
     print("[ok] Login clicks completed")
@@ -238,7 +251,7 @@ def main(argv=None) -> int:
             wait_until(target, args.tz_name)
 
         if args.dry_run:
-            print("[dry-run] Would perform 3 login clicks using images from:", args.images_dir)
+            print("[dry-run] Would perform 3–4 login clicks (with optional re-login) using images from:", args.images_dir)
             return 0
 
         ok = perform_login(args.images_dir, args.slow)

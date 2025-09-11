@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
 Test runner for autologin that lets you pass time args
-but skips the final submit click (step3) so you can test safely.
+but skips the final submit click so you can test safely.
 
 Usage examples:
 
-  - Run immediately (no waiting), clicking steps 1 and 2 only:
+  - Run immediately (no waiting), clicking steps 1 and 2 (and optional step 3) only:
       python test/autologin_test.py now --images AutoLogIn
 
   - Schedule at a specific time, skipping only the final submit:
@@ -70,7 +70,8 @@ def main(argv: list[str] | None = None) -> int:
     original_click_image = app.click_image
 
     def click_image_skip_submit(path: str, *cargs, **ckwargs) -> bool:  # type: ignore[override]
-        if path.endswith("step3_submit.png"):
+        # Skip whether using legacy step3_submit.png or new step4_submit.png
+        if path.endswith("step3_submit.png") or path.endswith("step4_submit.png"):
             print(f"[test] Skipping final submit click: {path}")
             return True  # Pretend it succeeded so the flow continues/ends cleanly
         return original_click_image(path, *cargs, **ckwargs)
@@ -97,4 +98,3 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-
