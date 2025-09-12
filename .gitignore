@@ -2,3 +2,4 @@ SalesForce/sf_private.py
 __pycache__
 .ipynb_checkpoints
 .virtual_documents
+.DS_Store
