@@ -14,6 +14,7 @@ except Exception:  # pragma: no cover
 
 
 AWAKE_JIGGLE_INTERVAL_SEC = 60
+_SCREEN_SCALE_CACHE: float | None = None
 
 
 def now_in_tz(tz_name: str) -> datetime:
@@ -110,6 +111,39 @@ class ScreenAwake:
             pass
 
 
+def _screen_scale(pyautogui_module) -> float:
+    """Empirical retina/high-DPI detection so we can adjust coordinates."""
+    global _SCREEN_SCALE_CACHE
+    if _SCREEN_SCALE_CACHE is not None:
+        return _SCREEN_SCALE_CACHE
+
+    scale = 1.0
+    try:
+        width, height = pyautogui_module.size()
+        if width and height:
+            screenshot = pyautogui_module.screenshot()
+            try:
+                shot_w, shot_h = screenshot.size
+                if shot_w and shot_h:
+                    sx = shot_w / width
+                    sy = shot_h / height
+                    approx = max(sx, sy)
+                    if approx > 1.05:  # ignore minor rounding differences
+                        scale = approx
+            finally:
+                try:
+                    screenshot.close()
+                except Exception:
+                    pass
+    except Exception:
+        pass
+
+    _SCREEN_SCALE_CACHE = scale
+    if scale > 1.05:
+        print(f"[info] High-DPI display detected (scale {scale:.2f}); compensating click coordinates.")
+    return scale
+
+
 def click_image(path: str, timeout: float = 30.0, confidence: float = 0.8, move_duration: float = 0.15) -> bool:
     """Locate an image on screen and click its center.
 
@@ -127,6 +161,7 @@ def click_image(path: str, timeout: float = 30.0, confidence: float = 0.8, move_
 
     start = time.time()
     last_err: Exception | None = None
+    scale = _screen_scale(pyautogui) or 1.0
     while time.time() - start < timeout:
         try:
             if has_cv:
@@ -143,7 +178,9 @@ def click_image(path: str, timeout: float = 30.0, confidence: float = 0.8, move_
                         pass
 
             if location:
-                pyautogui.moveTo(location.x, location.y, duration=move_duration)
+                target_x = location.x / scale
+                target_y = location.y / scale
+                pyautogui.moveTo(target_x, target_y, duration=move_duration)
                 pyautogui.click()
                 return True
         except Exception as e:
