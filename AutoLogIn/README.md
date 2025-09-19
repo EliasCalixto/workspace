@@ -1,17 +1,19 @@
 # Auto Login Mouse Automation
 
-This script automates three mouse clicks to perform your daily login on the BMS page, keeps your screen awake while it runs, and schedules the action for 07:29 America/Lima by default.
+This script automates five mouse clicks to perform your daily login on the BMS page, keeps your screen awake while it runs, and schedules the action for 07:29 America/Lima by default.
 
 ## Files
 - `AutoLogIn/autologin.py`: main script
 - `AutoLogIn/requirements.txt`: Python deps (PyAutoGUI + OpenCV)
-- `AutoLogIn/Screenshot1.png`..`Screenshot3.png`: your reference screenshots (provided). For reliable detection, create three small cropped images described below.
+- `AutoLogIn/step1_bluelogin.png` .. `AutoLogIn/step5_submit.png`: your reference screenshots (provided). For reliable detection, create the five small cropped images described below.
 
 ## Prepare reference images (important)
 Create small, crisp crops (PNG, no scaling) for the exact UI parts to click:
-- `AutoLogIn/step1_menu.png`: the top-right profile/menu button that opens the dropdown
-- `AutoLogIn/step2_login.png`: the dropdown item for login (you showed a logout example; capture the login item instead)
-- `AutoLogIn/step3_submit.png`: the purple `Submit` button within the small popup window
+- `AutoLogIn/step1_bluelogin.png`: the blue `Log In` button that appears when the session expired
+- `AutoLogIn/step2_here.png`: the `here` link/button that continues to the main portal after the blue login
+- `AutoLogIn/step3_menu.png`: the top-right profile/menu button that opens the dropdown
+- `AutoLogIn/step4_login.png`: the dropdown item for login (capture the login/clock-in entry)
+- `AutoLogIn/step5_submit.png`: the `Submit` button within the login modal (older flows may still use `step4_submit.png` or `step3_submit.png`)
 
 Tips:
 - Use your OS screenshot tool to crop only the button/label; avoid full-screen captures.
@@ -57,4 +59,3 @@ The script keeps your screen awake automatically (macOS uses `caffeinate` if ava
 ## Notes
 - You provided logout screenshots as examples. Replace step2 with your actual “Login/Clock In” item.
 - The script is fail-safe: moving mouse to the upper-left corner aborts PyAutoGUI actions.
-

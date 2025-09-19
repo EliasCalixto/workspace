@@ -5,7 +5,7 @@ but skips the final submit click so you can test safely.
 
 Usage examples:
 
-  - Run immediately (no waiting), clicking steps 1 and 2 (and optional step 3) only:
+  - Run immediately (no waiting), clicking blue login + "here" + menu + login (skipping submit):
       python test/autologin_test.py now --images AutoLogIn
 
   - Schedule at a specific time, skipping only the final submit:
@@ -70,15 +70,15 @@ def main(argv: list[str] | None = None) -> int:
     original_click_image = app.click_image
 
     def click_image_skip_submit(path: str, *cargs, **ckwargs) -> bool:  # type: ignore[override]
-        # Skip whether using legacy step3_submit.png or new step4_submit.png
-        if path.endswith("step3_submit.png") or path.endswith("step4_submit.png"):
+        # Skip whether using legacy/new submit images
+        if path.endswith("step3_submit.png") or path.endswith("step4_submit.png") or path.endswith("step5_submit.png"):
             print(f"[test] Skipping final submit click: {path}")
             return True  # Pretend it succeeded so the flow continues/ends cleanly
         return original_click_image(path, *cargs, **ckwargs)
 
     app.click_image = click_image_skip_submit  # type: ignore[assignment]
 
-    # Build argv for the real app without --dry-run so steps 1 and 2 still click
+    # Build argv for the real app without --dry-run so pre-login + navigation steps still click
     forwarded = [
         args.action,
         "--time",

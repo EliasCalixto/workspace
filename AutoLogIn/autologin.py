@@ -198,53 +198,61 @@ def click_image(path: str, timeout: float = 30.0, confidence: float = 0.8, move_
 def perform_login(images_dir: str, slow: float) -> bool:
     """Performs the login flow using provided reference images.
 
-    Standard flow (3–4 clicks):
-      - step1_menu.png     : user/profile menu button (top-right)
-      - step2_login.png    : 'Log In' (or similar) menu item
-      - step3_login2.png   : OPTIONAL blue re-login button if the session expired
-      - step4_submit.png   : 'Submit' button on the modal (or legacy step3_submit.png)
+    Standard flow (now 5 clicks):
+      - step1_bluelogin.png : blue 'Log In' button on the inactivity screen
+      - step2_here.png      : "here" link/button to reach the login form
+      - step3_menu.png      : user/profile menu button (top-right)
+      - step4_login.png     : 'Log In' (or similar) menu item
+      - step5_submit.png    : 'Submit' button on the modal (or legacy step4_submit.png / step3_submit.png)
     """
     import pyautogui
 
     pyautogui.FAILSAFE = True
     pyautogui.PAUSE = slow
 
-    s1 = f"{images_dir}/step1_menu.png"
-    s2 = f"{images_dir}/step2_login.png"
-    s3_optional = f"{images_dir}/step3_login2.png"  # optional blue login button
+    s1_blue_login = f"{images_dir}/step1_bluelogin.png"
+    s2_here = f"{images_dir}/step2_here.png"
+    s3_menu = f"{images_dir}/step3_menu.png"
+    s4_login = f"{images_dir}/step4_login.png"
 
-    # Final submit can be either step4_submit.png (new) or step3_submit.png (legacy)
+    # Final submit can be either step5_submit.png (newest), step4_submit.png (new), or step3_submit.png (legacy)
     import os
+    s_submit_newest = f"{images_dir}/step5_submit.png"
     s_submit_new = f"{images_dir}/step4_submit.png"
     s_submit_legacy = f"{images_dir}/step3_submit.png"
-    s_submit = s_submit_new if os.path.exists(s_submit_new) else s_submit_legacy
-
-    print("[info] Step 1: open menu…")
-    if not click_image(s1, timeout=25):
-        print("[error] Could not find step1_menu.png on screen")
-        return False
-
-    print("[info] Step 2: click 'Log In'…")
-    if not click_image(s2, timeout=25):
-        print("[error] Could not find step2_login.png on screen")
-        return False
-
-    # Some sessions require an extra blue 'Log In' click due to inactivity
-    print("[info] Step 3 (optional): re-login if requested…")
-    clicked_optional = click_image(s3_optional, timeout=8)
-    if clicked_optional:
-        print("[info] Optional re-login clicked; waiting for modal…")
-        time.sleep(1.0)
+    if os.path.exists(s_submit_newest):
+        s_submit = s_submit_newest
+    elif os.path.exists(s_submit_new):
+        s_submit = s_submit_new
     else:
-        print("[info] Optional re-login not shown; continuing…")
+        s_submit = s_submit_legacy
 
-    print("[info] Step 4: submit…")
-    if not click_image(s_submit, timeout=30):
-        print(f"[error] Could not find submit button image on screen ({os.path.basename(s_submit)})")
-        return False
+    step_timeout = 15.0
+    # Treat each step as optional: try briefly, then move on if not found.
+    steps = [
+        ("Step 1: click the blue 'Log In'…", s1_blue_login),
+        ("Step 2: click 'here' to proceed…", s2_here),
+        ("Step 3: open menu…", s3_menu),
+        ("Step 4: click 'Log In'…", s4_login),
+        ("Step 5: submit…", s_submit),
+    ]
 
-    print("[ok] Login clicks completed")
-    return True
+    completed_steps = 0
+    for message, path in steps:
+        print(f"[info] {message}")
+        if click_image(path, timeout=step_timeout):
+            completed_steps += 1
+        else:
+            print(
+                f"[warn] Skipped {message.lower()} (image '{os.path.basename(path)}' not found in {step_timeout:.0f}s)"
+            )
+
+    if completed_steps:
+        print(f"[ok] Completed {completed_steps}/{len(steps)} optional steps")
+    else:
+        print("[warn] Could not complete any steps automatically")
+
+    return completed_steps > 0
 
 
 def wait_until(target_dt: datetime, tz_name: str):
@@ -288,7 +296,7 @@ def main(argv=None) -> int:
             wait_until(target, args.tz_name)
 
         if args.dry_run:
-            print("[dry-run] Would perform 3–4 login clicks (with optional re-login) using images from:", args.images_dir)
+            print("[dry-run] Would perform 5 login clicks using images from:", args.images_dir)
             return 0
 
         ok = perform_login(args.images_dir, args.slow)
