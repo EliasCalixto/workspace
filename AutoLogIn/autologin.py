@@ -15,6 +15,7 @@ except Exception:  # pragma: no cover
 
 AWAKE_JIGGLE_INTERVAL_SEC = 60
 _SCREEN_SCALE_CACHE: float | None = None
+_SCREEN_CAPTURE_WARNING_EMITTED = False
 
 
 def now_in_tz(tz_name: str) -> datetime:
@@ -114,6 +115,7 @@ class ScreenAwake:
 def _screen_scale(pyautogui_module) -> float:
     """Empirical retina/high-DPI detection so we can adjust coordinates."""
     global _SCREEN_SCALE_CACHE
+    global _SCREEN_CAPTURE_WARNING_EMITTED
     if _SCREEN_SCALE_CACHE is not None:
         return _SCREEN_SCALE_CACHE
 
@@ -123,6 +125,27 @@ def _screen_scale(pyautogui_module) -> float:
         if width and height:
             screenshot = pyautogui_module.screenshot()
             try:
+                # Detect uniform screenshots – usually screen recording permission is missing (macOS)
+                if not _SCREEN_CAPTURE_WARNING_EMITTED:
+                    extrema = screenshot.getextrema()
+                    if extrema:
+                        # extrema returns per-channel tuples for RGB(A)
+                        flat: list[int] = []
+                        for item in extrema:
+                            if isinstance(item, (list, tuple)):
+                                flat.extend(int(x) for x in item)
+                            else:
+                                flat.append(int(item))
+                        if flat:
+                            channel_min = min(flat)
+                            channel_max = max(flat)
+                            if channel_min == channel_max:
+                                print(
+                                    "[warn] Captured screenshot appears blank/uniform."
+                                    " Grant screen recording permission to the terminal app and retry."
+                                )
+                                _SCREEN_CAPTURE_WARNING_EMITTED = True
+
                 shot_w, shot_h = screenshot.size
                 if shot_w and shot_h:
                     sx = shot_w / width
@@ -144,6 +167,43 @@ def _screen_scale(pyautogui_module) -> float:
     return scale
 
 
+def _template_scale_candidates(scale_hint: float) -> list[float]:
+    """Generate scale factors to try when matching reference images on screen."""
+
+    def _add(value: float, dest: list[float]) -> None:
+        if value <= 0:
+            return
+        if value < 0.5 or value > 2.5:
+            return
+        for existing in dest:
+            if abs(existing - value) < 0.04:
+                return
+        dest.append(value)
+
+    approx = round(scale_hint or 1.0, 2)
+    factors: list[float] = [1.0]
+
+    # Always include a baseline set around 1.0 in case our detection misses retina/high-DPI scaling
+    baseline = [0.75, 0.82, 0.9, 1.1, 1.18, 1.25, 1.5, 1.8, 2.0]
+    for value in baseline:
+        _add(value, factors)
+
+    if approx < 0.95 or approx > 1.05:
+        _add(approx, factors)
+        _add(approx * 0.92, factors)
+        _add(approx * 1.08, factors)
+        if approx != 0:
+            inv = 1.0 / approx
+            _add(inv, factors)
+            _add(inv * 0.92, factors)
+            _add(inv * 1.08, factors)
+
+    primary = [1.0]
+    secondary = [f for f in factors if abs(f - 1.0) >= 0.04]
+    secondary.sort(key=lambda value: (abs(value - approx), value))
+    return primary + secondary
+
+
 def click_image(path: str, timeout: float = 30.0, confidence: float = 0.8, move_duration: float = 0.15) -> bool:
     """Locate an image on screen and click its center.
 
@@ -162,34 +222,97 @@ def click_image(path: str, timeout: float = 30.0, confidence: float = 0.8, move_
     start = time.time()
     last_err: Exception | None = None
     scale = _screen_scale(pyautogui) or 1.0
-    while time.time() - start < timeout:
-        try:
-            if has_cv:
-                location = pyautogui.locateCenterOnScreen(path, confidence=confidence, grayscale=True)
-            else:
-                # Confidence/grayscale parameters require OpenCV; try exact match first.
-                location = pyautogui.locateCenterOnScreen(path)
-                if location is None:
-                    # Some environments may still support grayscale without cv2; try as a secondary attempt
-                    try:
-                        location = pyautogui.locateCenterOnScreen(path, grayscale=True)  # type: ignore[arg-type]
-                    except TypeError:
-                        # Older pyautogui may raise when grayscale used without cv2 — ignore and continue
-                        pass
+    templates: list[tuple[object, float]] = [(path, 1.0)]
+    using_scaled_templates = False
+    base_image = None
 
-            if location:
-                target_x = location.x / scale
-                target_y = location.y / scale
-                pyautogui.moveTo(target_x, target_y, duration=move_duration)
-                pyautogui.click()
-                return True
-        except Exception as e:
-            last_err = e
-            time.sleep(0.5)
-        time.sleep(0.4)
+    try:
+        from PIL import Image
+
+        base_image = Image.open(path)
+        base_image.load()
+        templates = [(base_image, 1.0)]
+        resample_attr = getattr(Image, "Resampling", None)
+        resample_method = getattr(resample_attr, "LANCZOS", Image.LANCZOS) if resample_attr else Image.LANCZOS # type: ignore
+
+        for factor in _template_scale_candidates(scale)[1:]:
+            width = max(1, int(round(base_image.width * factor)))
+            height = max(1, int(round(base_image.height * factor)))
+            if width == base_image.width and height == base_image.height:
+                continue
+            resized = base_image.resize((width, height), resample=resample_method)
+            templates.append((resized, factor))
+
+        if len(templates) == 1:
+            base_image.close()
+            base_image = None
+            templates = [(path, 1.0)]
+        else:
+            using_scaled_templates = True
+            print(
+                "[info] Trying scaled matches for '"
+                + path
+                + "': "
+                + ", ".join(f"{factor:.2f}x" for _, factor in templates)
+            )
+    except FileNotFoundError:
+        print(f"[warn] Reference image not found: {path}")
+        return False
+    except Exception:
+        if base_image is not None:
+            try:
+                base_image.close()
+            except Exception:
+                pass
+        templates = [(path, 1.0)]
+
+    try:
+        while time.time() - start < timeout:
+            try:
+                location = None
+                for template, _ in templates:
+                    if has_cv:
+                        location = pyautogui.locateCenterOnScreen(
+                            template,
+                            confidence=confidence,
+                            grayscale=True,
+                        )
+                    else:
+                        location = pyautogui.locateCenterOnScreen(template)
+                        if location is None:
+                            try:
+                                location = pyautogui.locateCenterOnScreen(
+                                    template,
+                                    grayscale=True,  # type: ignore[arg-type]
+                                )
+                            except TypeError:
+                                location = None
+                    if location:
+                        break
+
+                if location:
+                    target_x = location.x / scale
+                    target_y = location.y / scale
+                    pyautogui.moveTo(target_x, target_y, duration=move_duration)
+                    pyautogui.click()
+                    return True
+            except Exception as e:
+                last_err = e
+                time.sleep(0.5)
+            time.sleep(0.4)
+    finally:
+        for template, _ in templates:
+            try:
+                template.close()  # type: ignore[attr-defined]
+            except Exception:
+                pass
 
     if not has_cv:
-        print(f"[warn] OpenCV not installed; using exact match for '{path}'. If it fails, install OpenCV or retake the image at the same scale.")
+        print(
+            f"[warn] OpenCV not installed; using exact match for '{path}'. If it fails, install OpenCV or retake the image at the same scale."
+        )
+    if using_scaled_templates:
+        print(f"[warn] Could not match '{path}' using any generated scale variant")
     if last_err:
         print(f"[warn] click_image('{path}') last error: {last_err}")
     return False
@@ -215,17 +338,8 @@ def perform_login(images_dir: str, slow: float) -> bool:
     s3_menu = f"{images_dir}/step3_menu.png"
     s4_login = f"{images_dir}/step4_login.png"
 
-    # Final submit can be either step5_submit.png (newest), step4_submit.png (new), or step3_submit.png (legacy)
     import os
-    s_submit_newest = f"{images_dir}/step5_submit.png"
-    s_submit_new = f"{images_dir}/step4_submit.png"
-    s_submit_legacy = f"{images_dir}/step3_submit.png"
-    if os.path.exists(s_submit_newest):
-        s_submit = s_submit_newest
-    elif os.path.exists(s_submit_new):
-        s_submit = s_submit_new
-    else:
-        s_submit = s_submit_legacy
+    s_submit = f"{images_dir}/step5_submit.png"
 
     step_timeout = 15.0
     # Treat each step as optional: try briefly, then move on if not found.

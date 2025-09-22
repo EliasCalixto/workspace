@@ -71,7 +71,7 @@ def main(argv: list[str] | None = None) -> int:
 
     def click_image_skip_submit(path: str, *cargs, **ckwargs) -> bool:  # type: ignore[override]
         # Skip whether using legacy/new submit images
-        if path.endswith("step3_submit.png") or path.endswith("step4_submit.png") or path.endswith("step5_submit.png"):
+        if path.endswith("step5_submit.png"):
             print(f"[test] Skipping final submit click: {path}")
             return True  # Pretend it succeeded so the flow continues/ends cleanly
         return original_click_image(path, *cargs, **ckwargs)

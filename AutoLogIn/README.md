@@ -52,6 +52,7 @@ The script keeps your screen awake automatically (macOS uses `caffeinate` if ava
 
 ## Troubleshooting
 - If images aren’t found, re-crop them smaller and sharper, or reduce/raise confidence by editing `autologin.py` (`confidence=0.8`).
+- On high-DPI/2K displays the script now tries scaled versions of the reference images automatically; if it still fails, retake the screenshots on that monitor.
 - Keep your browser window visible on the active desktop; do not minimize it.
 - Ensure consistent zoom level and UI theme.
 - If OpenCV is missing, reinstall requirements.
