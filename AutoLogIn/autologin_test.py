@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
 Test runner for autologin that lets you pass time args
-but skips the final submit click so you can test safely.
+but skips the final submit click (step3) so you can test safely.
 
 Usage examples:
 
-  - Run immediately (no waiting), clicking blue login + "here" + menu + login (skipping submit):
+  - Run immediately (no waiting), clicking steps 1 and 2 only:
       python test/autologin_test.py now --images AutoLogIn
 
   - Schedule at a specific time, skipping only the final submit:
@@ -48,8 +48,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--images",
         dest="images_dir",
-        default="/Users/darkesthj/Dev/workspace/autologin",
-        help="Directory with step images (default AutoLogIn)",
+        default=app.DEFAULT_IMAGES_DIR,
+        help=f"Directory with step images (default {app.DEFAULT_IMAGES_DIR})",
     )
     parser.add_argument(
         "--slow",
@@ -70,7 +70,6 @@ def main(argv: list[str] | None = None) -> int:
     original_click_image = app.click_image
 
     def click_image_skip_submit(path: str, *cargs, **ckwargs) -> bool:  # type: ignore[override]
-        # Skip whether using legacy/new submit images
         if path.endswith("step5_submit.png"):
             print(f"[test] Skipping final submit click: {path}")
             return True  # Pretend it succeeded so the flow continues/ends cleanly
@@ -78,7 +77,7 @@ def main(argv: list[str] | None = None) -> int:
 
     app.click_image = click_image_skip_submit  # type: ignore[assignment]
 
-    # Build argv for the real app without --dry-run so pre-login + navigation steps still click
+    # Build argv for the real app without --dry-run so steps 1 and 2 still click
     forwarded = [
         args.action,
         "--time",

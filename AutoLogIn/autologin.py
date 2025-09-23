@@ -5,6 +5,7 @@ import threading
 import subprocess
 import platform
 from datetime import datetime, timedelta
+from pathlib import Path
 
 # Prefer zoneinfo (Python 3.9+) to avoid external deps
 try:
@@ -14,8 +15,7 @@ except Exception:  # pragma: no cover
 
 
 AWAKE_JIGGLE_INTERVAL_SEC = 60
-_SCREEN_SCALE_CACHE: float | None = None
-_SCREEN_CAPTURE_WARNING_EMITTED = False
+DEFAULT_IMAGES_DIR = str(Path(__file__).resolve().parent)
 
 
 def now_in_tz(tz_name: str) -> datetime:
@@ -112,261 +112,173 @@ class ScreenAwake:
             pass
 
 
-def _screen_scale(pyautogui_module) -> float:
-    """Empirical retina/high-DPI detection so we can adjust coordinates."""
-    global _SCREEN_SCALE_CACHE
-    global _SCREEN_CAPTURE_WARNING_EMITTED
-    if _SCREEN_SCALE_CACHE is not None:
-        return _SCREEN_SCALE_CACHE
-
-    scale = 1.0
-    try:
-        width, height = pyautogui_module.size()
-        if width and height:
-            screenshot = pyautogui_module.screenshot()
-            try:
-                # Detect uniform screenshots – usually screen recording permission is missing (macOS)
-                if not _SCREEN_CAPTURE_WARNING_EMITTED:
-                    extrema = screenshot.getextrema()
-                    if extrema:
-                        # extrema returns per-channel tuples for RGB(A)
-                        flat: list[int] = []
-                        for item in extrema:
-                            if isinstance(item, (list, tuple)):
-                                flat.extend(int(x) for x in item)
-                            else:
-                                flat.append(int(item))
-                        if flat:
-                            channel_min = min(flat)
-                            channel_max = max(flat)
-                            if channel_min == channel_max:
-                                print(
-                                    "[warn] Captured screenshot appears blank/uniform."
-                                    " Grant screen recording permission to the terminal app and retry."
-                                )
-                                _SCREEN_CAPTURE_WARNING_EMITTED = True
-
-                shot_w, shot_h = screenshot.size
-                if shot_w and shot_h:
-                    sx = shot_w / width
-                    sy = shot_h / height
-                    approx = max(sx, sy)
-                    if approx > 1.05:  # ignore minor rounding differences
-                        scale = approx
-            finally:
-                try:
-                    screenshot.close()
-                except Exception:
-                    pass
-    except Exception:
-        pass
-
-    _SCREEN_SCALE_CACHE = scale
-    if scale > 1.05:
-        print(f"[info] High-DPI display detected (scale {scale:.2f}); compensating click coordinates.")
-    return scale
-
-
-def _template_scale_candidates(scale_hint: float) -> list[float]:
-    """Generate scale factors to try when matching reference images on screen."""
-
-    def _add(value: float, dest: list[float]) -> None:
-        if value <= 0:
-            return
-        if value < 0.5 or value > 2.5:
-            return
-        for existing in dest:
-            if abs(existing - value) < 0.04:
-                return
-        dest.append(value)
-
-    approx = round(scale_hint or 1.0, 2)
-    factors: list[float] = [1.0]
-
-    # Always include a baseline set around 1.0 in case our detection misses retina/high-DPI scaling
-    baseline = [0.75, 0.82, 0.9, 1.1, 1.18, 1.25, 1.5, 1.8, 2.0]
-    for value in baseline:
-        _add(value, factors)
-
-    if approx < 0.95 or approx > 1.05:
-        _add(approx, factors)
-        _add(approx * 0.92, factors)
-        _add(approx * 1.08, factors)
-        if approx != 0:
-            inv = 1.0 / approx
-            _add(inv, factors)
-            _add(inv * 0.92, factors)
-            _add(inv * 1.08, factors)
-
-    primary = [1.0]
-    secondary = [f for f in factors if abs(f - 1.0) >= 0.04]
-    secondary.sort(key=lambda value: (abs(value - approx), value))
-    return primary + secondary
-
-
 def click_image(path: str, timeout: float = 30.0, confidence: float = 0.8, move_duration: float = 0.15) -> bool:
     """Locate an image on screen and click its center.
 
-    - Uses OpenCV confidence matching if available.
-    - Falls back to exact match (no confidence) when OpenCV is missing.
-    Returns True if clicked, False otherwise.
+    Tries PyAutoGUI first, then an OpenCV multi-scale search so images taken on
+    different resolutions can still be matched. Returns True if clicked.
     """
+
     import pyautogui
 
     try:
-        import cv2  # type: ignore  # noqa: F401
+        import cv2  # type: ignore
+        import numpy as np  # type: ignore
         has_cv = True
     except Exception:
         has_cv = False
 
+    def _pyautogui_locate() -> tuple[float, float] | None:
+        """Use built-in locate (handles Retina scaling automatically)."""
+
+        try:
+            if has_cv:
+                loc = pyautogui.locateCenterOnScreen(path, confidence=confidence, grayscale=True)
+            else:
+                loc = pyautogui.locateCenterOnScreen(path)
+                if loc is None:
+                    try:
+                        loc = pyautogui.locateCenterOnScreen(path, grayscale=True)  # type: ignore[arg-type]
+                    except TypeError:
+                        pass
+        except Exception:
+            return None
+
+        if loc is None:
+            return None
+        return (loc.x, loc.y)
+
+    def _opencv_multiscale_locate() -> tuple[float, float] | None:
+        if not has_cv:
+            return None
+
+        try:
+            template = cv2.imread(path, cv2.IMREAD_COLOR)
+        except Exception:
+            return None
+
+        if template is None or template.size == 0:
+            print(f"[warn] '{path}' could not be read by OpenCV. Check that the file exists and is a valid image.")
+            return None
+
+        screenshot = pyautogui.screenshot()
+        screen_w, screen_h = screenshot.size
+        logical_w, logical_h = pyautogui.size()
+        ratio_x = screen_w / logical_w if logical_w else 1.0
+        ratio_y = screen_h / logical_h if logical_h else 1.0
+
+        screenshot_bgr = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
+        screenshot_gray = cv2.cvtColor(screenshot_bgr, cv2.COLOR_BGR2GRAY)
+        template_gray = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
+
+        # Generate candidate scales around 1.0 and the device pixel ratio (handles HiDPI).
+        base_scales = [1.0, ratio_x, ratio_x * 0.75, ratio_x * 1.25, 0.85, 1.15, 0.7, 1.3, 0.6, 1.4, 0.5, 1.6]
+        seen: set[float] = set()
+        scale_candidates: list[float] = []
+        for scale in base_scales:
+            if scale <= 0:
+                continue
+            normalized = round(scale, 3)
+            if normalized in seen:
+                continue
+            seen.add(normalized)
+            scale_candidates.append(normalized)
+
+        # Try scales closest to 1.0 first for quicker matches.
+        scale_candidates.sort(key=lambda s: abs(1.0 - s))
+
+        for scale in scale_candidates:
+            if scale == 1.0:
+                scaled_template = template_gray
+            else:
+                new_w = max(1, int(template_gray.shape[1] * scale))
+                new_h = max(1, int(template_gray.shape[0] * scale))
+                if new_w > screenshot_gray.shape[1] or new_h > screenshot_gray.shape[0]:
+                    continue
+                interp = cv2.INTER_AREA if scale < 1.0 else cv2.INTER_CUBIC
+                scaled_template = cv2.resize(template_gray, (new_w, new_h), interpolation=interp)
+
+            result = cv2.matchTemplate(screenshot_gray, scaled_template, cv2.TM_CCOEFF_NORMED)
+            _min_val, max_val, _min_loc, max_loc = cv2.minMaxLoc(result)
+
+            if max_val >= confidence:
+                center_x = max_loc[0] + scaled_template.shape[1] / 2
+                center_y = max_loc[1] + scaled_template.shape[0] / 2
+                # Convert back to logical coordinates for HiDPI displays.
+                logical_x = center_x / ratio_x
+                logical_y = center_y / ratio_y
+                print(f"[info] Matched '{path}' via OpenCV scale {scale:.2f} (confidence {max_val:.2f}).")
+                return (logical_x, logical_y)
+
+        return None
+
     start = time.time()
     last_err: Exception | None = None
-    scale = _screen_scale(pyautogui) or 1.0
-    templates: list[tuple[object, float]] = [(path, 1.0)]
-    using_scaled_templates = False
-    base_image = None
+    while time.time() - start < timeout:
+        try:
+            location = _pyautogui_locate()
+            if location is None:
+                location = _opencv_multiscale_locate()
 
-    try:
-        from PIL import Image
-
-        base_image = Image.open(path)
-        base_image.load()
-        templates = [(base_image, 1.0)]
-        resample_attr = getattr(Image, "Resampling", None)
-        resample_method = getattr(resample_attr, "LANCZOS", Image.LANCZOS) if resample_attr else Image.LANCZOS # type: ignore
-
-        for factor in _template_scale_candidates(scale)[1:]:
-            width = max(1, int(round(base_image.width * factor)))
-            height = max(1, int(round(base_image.height * factor)))
-            if width == base_image.width and height == base_image.height:
-                continue
-            resized = base_image.resize((width, height), resample=resample_method)
-            templates.append((resized, factor))
-
-        if len(templates) == 1:
-            base_image.close()
-            base_image = None
-            templates = [(path, 1.0)]
-        else:
-            using_scaled_templates = True
-            print(
-                "[info] Trying scaled matches for '"
-                + path
-                + "': "
-                + ", ".join(f"{factor:.2f}x" for _, factor in templates)
-            )
-    except FileNotFoundError:
-        print(f"[warn] Reference image not found: {path}")
-        return False
-    except Exception:
-        if base_image is not None:
-            try:
-                base_image.close()
-            except Exception:
-                pass
-        templates = [(path, 1.0)]
-
-    try:
-        while time.time() - start < timeout:
-            try:
-                location = None
-                for template, _ in templates:
-                    if has_cv:
-                        location = pyautogui.locateCenterOnScreen(
-                            template,
-                            confidence=confidence,
-                            grayscale=True,
-                        )
-                    else:
-                        location = pyautogui.locateCenterOnScreen(template)
-                        if location is None:
-                            try:
-                                location = pyautogui.locateCenterOnScreen(
-                                    template,
-                                    grayscale=True,  # type: ignore[arg-type]
-                                )
-                            except TypeError:
-                                location = None
-                    if location:
-                        break
-
-                if location:
-                    target_x = location.x / scale
-                    target_y = location.y / scale
-                    pyautogui.moveTo(target_x, target_y, duration=move_duration)
-                    pyautogui.click()
-                    return True
-            except Exception as e:
-                last_err = e
-                time.sleep(0.5)
-            time.sleep(0.4)
-    finally:
-        for template, _ in templates:
-            try:
-                template.close()  # type: ignore[attr-defined]
-            except Exception:
-                pass
+            if location is not None:
+                x, y = location
+                pyautogui.moveTo(x, y, duration=move_duration)
+                pyautogui.click()
+                return True
+        except Exception as e:
+            last_err = e
+            time.sleep(0.5)
+        time.sleep(0.4)
 
     if not has_cv:
-        print(
-            f"[warn] OpenCV not installed; using exact match for '{path}'. If it fails, install OpenCV or retake the image at the same scale."
-        )
-    if using_scaled_templates:
-        print(f"[warn] Could not match '{path}' using any generated scale variant")
+        print(f"[warn] OpenCV not installed; only exact-size matches attempted for '{path}'. Install OpenCV for better tolerance to scaling.")
     if last_err:
         print(f"[warn] click_image('{path}') last error: {last_err}")
     return False
 
 
 def perform_login(images_dir: str, slow: float) -> bool:
-    """Performs the login flow using provided reference images.
-
-    Standard flow (now 5 clicks):
-      - step1_bluelogin.png : blue 'Log In' button on the inactivity screen
-      - step2_here.png      : "here" link/button to reach the login form
-      - step3_menu.png      : user/profile menu button (top-right)
-      - step4_login.png     : 'Log In' (or similar) menu item
-      - step5_submit.png    : 'Submit' button on the modal (or legacy step4_submit.png / step3_submit.png)
-    """
     import pyautogui
 
     pyautogui.FAILSAFE = True
     pyautogui.PAUSE = slow
 
-    s1_blue_login = f"{images_dir}/step1_bluelogin.png"
-    s2_here = f"{images_dir}/step2_here.png"
-    s3_menu = f"{images_dir}/step3_menu.png"
-    s4_login = f"{images_dir}/step4_login.png"
-
-    import os
-    s_submit = f"{images_dir}/step5_submit.png"
-
-    step_timeout = 15.0
-    # Treat each step as optional: try briefly, then move on if not found.
+    images_root = Path(images_dir).expanduser()
     steps = [
-        ("Step 1: click the blue 'Log In'…", s1_blue_login),
-        ("Step 2: click 'here' to proceed…", s2_here),
-        ("Step 3: open menu…", s3_menu),
-        ("Step 4: click 'Log In'…", s4_login),
-        ("Step 5: submit…", s_submit),
+        ("Step 1", "blue login button", images_root / "step1_bluelogin.png", 25),
+        ("Step 2", "'click here' link", images_root / "step2_here.png", 25),
+        ("Step 3", "menu", images_root / "step3_menu.png", 30),
+        ("Step 4", "login option", images_root / "step4_login.png", 30),
+        ("Step 5", "submit button", images_root / "step5_submit.png", 30),
     ]
 
-    completed_steps = 0
-    for message, path in steps:
-        print(f"[info] {message}")
-        if click_image(path, timeout=step_timeout):
-            completed_steps += 1
+    completed: list[str] = []
+    skipped: list[str] = []
+
+    for step_id, description, img_path, timeout in steps:
+        print(f"[info] {step_id}: {description}…")
+        if not img_path.exists():
+            print(f"[warn] {step_id} omitido: no se encontró el archivo de imagen {img_path}.")
+            skipped.append(f"{step_id} ({description}) - archivo ausente")
+            continue
+
+        if click_image(str(img_path), timeout=timeout):
+            completed.append(step_id)
+            continue
+
+        print(f"[warn] {step_id} omitido: la imagen {img_path.name} no apareció en pantalla tras {timeout}s.")
+        skipped.append(f"{step_id} ({description}) - no visible")
+
+    if completed:
+        if skipped:
+            print(f"[info] Se completaron {len(completed)} pasos: {', '.join(completed)}. "
+                  f"Saltados: {len(skipped)} ({'; '.join(skipped)}).")
         else:
-            print(
-                f"[warn] Skipped {message.lower()} (image '{os.path.basename(path)}' not found in {step_timeout:.0f}s)"
-            )
+            print("[ok] Todos los pasos completados.")
+        return True
 
-    if completed_steps:
-        print(f"[ok] Completed {completed_steps}/{len(steps)} optional steps")
-    else:
-        print("[warn] Could not complete any steps automatically")
-
-    return completed_steps > 0
+    print("[error] Ningún paso se pudo ejecutar; revisa las imágenes de referencia y la interfaz actual.")
+    return False
 
 
 def wait_until(target_dt: datetime, tz_name: str):
@@ -387,8 +299,8 @@ def main(argv=None) -> int:
                         help="Local time in HH:MM for America/Lima (default 07:29)")
     parser.add_argument("--tz", default="America/Lima", dest="tz_name",
                         help="IANA timezone name (default America/Lima)")
-    parser.add_argument("--images", default="/Users/darkesthj/Dev/workspace/autologin", dest="images_dir",
-                        help="Directory containing step images (default AutoLogIn)")
+    parser.add_argument("--images", default=DEFAULT_IMAGES_DIR, dest="images_dir",
+                        help=f"Directory containing step images (default {DEFAULT_IMAGES_DIR})")
     parser.add_argument("--slow", type=float, default=0.2, dest="slow",
                         help="Pause between PyAutoGUI actions (default 0.2s)")
     parser.add_argument("--no-awake", action="store_true", help="Do not force screen awake while running")
@@ -396,6 +308,10 @@ def main(argv=None) -> int:
     args = parser.parse_args(argv)
 
     hh, mm = map(int, args.time_hhmm.split(":"))
+    images_dir = str(Path(args.images_dir).expanduser())
+    images_path = Path(images_dir)
+    images_display = str(images_path.resolve()) if images_path.exists() else images_dir
+    print(f"[info] Using images directory: {images_display}")
 
     # Start keep-awake if requested
     awake = ScreenAwake()
@@ -410,10 +326,10 @@ def main(argv=None) -> int:
             wait_until(target, args.tz_name)
 
         if args.dry_run:
-            print("[dry-run] Would perform 5 login clicks using images from:", args.images_dir)
+            print("[dry-run] Would perform 5 login clicks using images from:", images_dir)
             return 0
 
-        ok = perform_login(args.images_dir, args.slow)
+        ok = perform_login(images_dir, args.slow)
         return 0 if ok else 2
     finally:
         awake.stop()
