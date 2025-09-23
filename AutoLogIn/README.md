@@ -54,6 +54,7 @@ Add `--dry-run` to skip the clicks but verify scheduling, or `--no-awake` to dis
 - If a step fails, verify the image file exists and matches the current UI (color theme, zoom, etc.).
 - On macOS Retina/high-DPI monitors, keep the browser window fully visible. The OpenCV fallback reports the scale it used; use that information when recapturing images.
 - Reinstall requirements if you see errors about missing OpenCV or PyAutoGUI.
+- La automatización está calibrada para la pantalla principal Retina del MacBook Pro; desconecta monitores externos o ajusta el código antes de usar múltiples displays.
 
 ## Testing without submitting
 `autologin_test.py` forwards all arguments to `autologin.py` but skips the final submit click so you can verify the first four interactions safely:

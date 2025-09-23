@@ -128,8 +128,55 @@ def click_image(path: str, timeout: float = 30.0, confidence: float = 0.8, move_
     except Exception:
         has_cv = False
 
+    metrics: dict[str, object] = {}
+
+    def _ensure_display_metrics(require_image: bool = False):
+        if not metrics:
+            logical_w, logical_h = map(int, pyautogui.size())
+            ratio_x = ratio_y = 1.0
+            try:
+                from AppKit import NSScreen  # type: ignore
+
+                screen = NSScreen.mainScreen()
+                if screen is not None and hasattr(screen, "backingScaleFactor"):
+                    scale = float(screen.backingScaleFactor())
+                    if scale > 0:
+                        ratio_x = ratio_y = scale
+            except Exception:
+                pass
+
+            metrics.update(
+                {
+                    "logical_w": logical_w,
+                    "logical_h": logical_h,
+                    "ratio_x": ratio_x,
+                    "ratio_y": ratio_y,
+                    "screenshot": None,
+                    "logged": False,
+                }
+            )
+
+        if (require_image or metrics["ratio_x"] == 1.0 or metrics["ratio_y"] == 1.0) and metrics["screenshot"] is None:
+            logical_w = int(metrics["logical_w"])  # type: ignore[assignment]
+            logical_h = int(metrics["logical_h"])  # type: ignore[assignment]
+            try:
+                shot = pyautogui.screenshot(region=(0, 0, logical_w, logical_h))
+            except Exception:
+                shot = pyautogui.screenshot()
+            screen_w, screen_h = shot.size
+
+            if metrics["ratio_x"] == 1.0 or metrics["ratio_y"] == 1.0:
+                logical_w = int(metrics["logical_w"])  # type: ignore[assignment]
+                logical_h = int(metrics["logical_h"])  # type: ignore[assignment]
+                metrics["ratio_x"] = screen_w / logical_w if logical_w else 1.0
+                metrics["ratio_y"] = screen_h / logical_h if logical_h else 1.0
+
+            metrics["screenshot"] = shot
+
+        return metrics
+
     def _pyautogui_locate() -> tuple[float, float] | None:
-        """Use built-in locate (handles Retina scaling automatically)."""
+        """Use built-in locate (convert coordinates for Retina displays)."""
 
         try:
             if has_cv:
@@ -146,7 +193,22 @@ def click_image(path: str, timeout: float = 30.0, confidence: float = 0.8, move_
 
         if loc is None:
             return None
-        return (loc.x, loc.y)
+
+        info = _ensure_display_metrics()
+        ratio_x = info["ratio_x"]  # type: ignore[assignment]
+        ratio_y = info["ratio_y"]  # type: ignore[assignment]
+
+        # PyAutoGUI may return pixel coordinates on Retina; convert back to logical points.
+        x = loc.x / ratio_x if ratio_x and ratio_x != 1.0 else loc.x
+        y = loc.y / ratio_y if ratio_y and ratio_y != 1.0 else loc.y
+        if not info["logged"] and (ratio_x != 1.0 or ratio_y != 1.0):
+            logical_w = info["logical_w"]  # type: ignore[assignment]
+            logical_h = info["logical_h"]  # type: ignore[assignment]
+            print(
+                f"[info] Retina scaling detectada: coords {logical_w}x{logical_h} con ratio {ratio_x:.2f}x{ratio_y:.2f}."
+            )
+            info["logged"] = True
+        return (x, y)
 
     def _opencv_multiscale_locate() -> tuple[float, float] | None:
         if not has_cv:
@@ -161,31 +223,29 @@ def click_image(path: str, timeout: float = 30.0, confidence: float = 0.8, move_
             print(f"[warn] '{path}' could not be read by OpenCV. Check that the file exists and is a valid image.")
             return None
 
-        screenshot = pyautogui.screenshot()
-        screen_w, screen_h = screenshot.size
-        logical_w, logical_h = pyautogui.size()
-        ratio_x = screen_w / logical_w if logical_w else 1.0
-        ratio_y = screen_h / logical_h if logical_h else 1.0
+        info = _ensure_display_metrics(require_image=True)
+        screenshot = info["screenshot"]  # type: ignore[assignment]
+        if screenshot is None:
+            return None
+        logical_w = info["logical_w"]  # type: ignore[assignment]
+        logical_h = info["logical_h"]  # type: ignore[assignment]
+        ratio_x = info["ratio_x"]  # type: ignore[assignment]
+        ratio_y = info["ratio_y"]  # type: ignore[assignment]
+
+        if not info["logged"] and (ratio_x != 1.0 or ratio_y != 1.0):
+            screen_w, screen_h = screenshot.size
+            print(
+                f"[info] Retina scaling detectada: captura {screen_w}x{screen_h} px vs {logical_w}x{logical_h} coords (ratio {ratio_x:.2f}x{ratio_y:.2f})."
+            )
+            info["logged"] = True
 
         screenshot_bgr = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
         screenshot_gray = cv2.cvtColor(screenshot_bgr, cv2.COLOR_BGR2GRAY)
         template_gray = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
 
-        # Generate candidate scales around 1.0 and the device pixel ratio (handles HiDPI).
-        base_scales = [1.0, ratio_x, ratio_x * 0.75, ratio_x * 1.25, 0.85, 1.15, 0.7, 1.3, 0.6, 1.4, 0.5, 1.6]
-        seen: set[float] = set()
-        scale_candidates: list[float] = []
-        for scale in base_scales:
-            if scale <= 0:
-                continue
-            normalized = round(scale, 3)
-            if normalized in seen:
-                continue
-            seen.add(normalized)
-            scale_candidates.append(normalized)
-
-        # Try scales closest to 1.0 first for quicker matches.
-        scale_candidates.sort(key=lambda s: abs(1.0 - s))
+        scale_candidates: list[float] = [1.0]
+        if ratio_x > 0 and abs(ratio_x - 1.0) >= 0.01:
+            scale_candidates.append(round(ratio_x, 3))
 
         for scale in scale_candidates:
             if scale == 1.0:
@@ -204,10 +264,12 @@ def click_image(path: str, timeout: float = 30.0, confidence: float = 0.8, move_
             if max_val >= confidence:
                 center_x = max_loc[0] + scaled_template.shape[1] / 2
                 center_y = max_loc[1] + scaled_template.shape[0] / 2
-                # Convert back to logical coordinates for HiDPI displays.
                 logical_x = center_x / ratio_x
                 logical_y = center_y / ratio_y
-                print(f"[info] Matched '{path}' via OpenCV scale {scale:.2f} (confidence {max_val:.2f}).")
+                print(
+                    f"[info] Matched '{path}' via OpenCV scale {scale:.2f} (conf {max_val:.2f});"
+                    f" pixel=({center_x:.1f},{center_y:.1f}) -> coords=({logical_x:.1f},{logical_y:.1f})."
+                )
                 return (logical_x, logical_y)
 
         return None
@@ -216,12 +278,15 @@ def click_image(path: str, timeout: float = 30.0, confidence: float = 0.8, move_
     last_err: Exception | None = None
     while time.time() - start < timeout:
         try:
+            source = "pyautogui"
             location = _pyautogui_locate()
             if location is None:
+                source = "opencv"
                 location = _opencv_multiscale_locate()
 
             if location is not None:
                 x, y = location
+                print(f"[info] {source} moverá el cursor a ({x:.1f}, {y:.1f}).")
                 pyautogui.moveTo(x, y, duration=move_duration)
                 pyautogui.click()
                 return True
