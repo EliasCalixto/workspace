@@ -130,7 +130,7 @@ def click_image(path: str, timeout: float = 30.0, confidence: float = 0.8, move_
 
     metrics: dict[str, object] = {}
 
-    def _ensure_display_metrics(require_image: bool = False):
+    def _ensure_display_metrics(require_image: bool = False, refresh_image: bool = False):
         if not metrics:
             logical_w, logical_h = map(int, pyautogui.size())
             ratio_x = ratio_y = 1.0
@@ -156,6 +156,9 @@ def click_image(path: str, timeout: float = 30.0, confidence: float = 0.8, move_
                 }
             )
 
+        if refresh_image and metrics:
+            metrics["screenshot"] = None
+
         if (require_image or metrics["ratio_x"] == 1.0 or metrics["ratio_y"] == 1.0) and metrics["screenshot"] is None:
             logical_w = int(metrics["logical_w"])  # type: ignore[assignment]
             logical_h = int(metrics["logical_h"])  # type: ignore[assignment]
@@ -175,12 +178,12 @@ def click_image(path: str, timeout: float = 30.0, confidence: float = 0.8, move_
 
         return metrics
 
-    def _pyautogui_locate() -> tuple[float, float] | None:
+    def _pyautogui_locate(threshold: float) -> tuple[float, float] | None:
         """Use built-in locate (convert coordinates for Retina displays)."""
 
         try:
             if has_cv:
-                loc = pyautogui.locateCenterOnScreen(path, confidence=confidence, grayscale=True)
+                loc = pyautogui.locateCenterOnScreen(path, confidence=threshold, grayscale=True)
             else:
                 loc = pyautogui.locateCenterOnScreen(path)
                 if loc is None:
@@ -205,12 +208,12 @@ def click_image(path: str, timeout: float = 30.0, confidence: float = 0.8, move_
             logical_w = info["logical_w"]  # type: ignore[assignment]
             logical_h = info["logical_h"]  # type: ignore[assignment]
             print(
-                f"[info] Retina scaling detectada: coords {logical_w}x{logical_h} con ratio {ratio_x:.2f}x{ratio_y:.2f}."
+                f"[info] Retina scale: coords {logical_w}x{logical_h}, ratio {ratio_x:.2f}x{ratio_y:.2f}"
             )
             info["logged"] = True
         return (x, y)
 
-    def _opencv_multiscale_locate() -> tuple[float, float] | None:
+    def _opencv_multiscale_locate(threshold: float) -> tuple[float, float] | None:
         if not has_cv:
             return None
 
@@ -223,7 +226,7 @@ def click_image(path: str, timeout: float = 30.0, confidence: float = 0.8, move_
             print(f"[warn] '{path}' could not be read by OpenCV. Check that the file exists and is a valid image.")
             return None
 
-        info = _ensure_display_metrics(require_image=True)
+        info = _ensure_display_metrics(require_image=True, refresh_image=True)
         screenshot = info["screenshot"]  # type: ignore[assignment]
         if screenshot is None:
             return None
@@ -235,7 +238,7 @@ def click_image(path: str, timeout: float = 30.0, confidence: float = 0.8, move_
         if not info["logged"] and (ratio_x != 1.0 or ratio_y != 1.0):
             screen_w, screen_h = screenshot.size
             print(
-                f"[info] Retina scaling detectada: captura {screen_w}x{screen_h} px vs {logical_w}x{logical_h} coords (ratio {ratio_x:.2f}x{ratio_y:.2f})."
+                f"[info] Retina scale: capture {screen_w}x{screen_h}px vs coords {logical_w}x{logical_h} (ratio {ratio_x:.2f}x{ratio_y:.2f})"
             )
             info["logged"] = True
 
@@ -261,14 +264,13 @@ def click_image(path: str, timeout: float = 30.0, confidence: float = 0.8, move_
             result = cv2.matchTemplate(screenshot_gray, scaled_template, cv2.TM_CCOEFF_NORMED)
             _min_val, max_val, _min_loc, max_loc = cv2.minMaxLoc(result)
 
-            if max_val >= confidence:
+            if max_val >= threshold:
                 center_x = max_loc[0] + scaled_template.shape[1] / 2
                 center_y = max_loc[1] + scaled_template.shape[0] / 2
                 logical_x = center_x / ratio_x
                 logical_y = center_y / ratio_y
                 print(
-                    f"[info] Matched '{path}' via OpenCV scale {scale:.2f} (conf {max_val:.2f});"
-                    f" pixel=({center_x:.1f},{center_y:.1f}) -> coords=({logical_x:.1f},{logical_y:.1f})."
+                    f"[info] OpenCV match '{path}' scale {scale:.2f} conf {max_val:.2f} -> ({logical_x:.1f},{logical_y:.1f})"
                 )
                 return (logical_x, logical_y)
 
@@ -277,16 +279,25 @@ def click_image(path: str, timeout: float = 30.0, confidence: float = 0.8, move_
     start = time.time()
     last_err: Exception | None = None
     while time.time() - start < timeout:
+        elapsed = time.time() - start
+        ratio = elapsed / timeout if timeout else 1.0
+        if ratio < 0.4:
+            search_conf = confidence
+        elif ratio < 0.7:
+            search_conf = max(0.6, confidence - 0.15)
+        else:
+            search_conf = max(0.5, confidence - 0.25)
+
         try:
             source = "pyautogui"
-            location = _pyautogui_locate()
+            location = _pyautogui_locate(search_conf)
             if location is None:
                 source = "opencv"
-                location = _opencv_multiscale_locate()
+                location = _opencv_multiscale_locate(search_conf)
 
             if location is not None:
                 x, y = location
-                print(f"[info] {source} moverá el cursor a ({x:.1f}, {y:.1f}).")
+                print(f"[info] {source} move -> ({x:.1f}, {y:.1f})")
                 pyautogui.moveTo(x, y, duration=move_duration)
                 pyautogui.click()
                 return True
@@ -296,9 +307,9 @@ def click_image(path: str, timeout: float = 30.0, confidence: float = 0.8, move_
         time.sleep(0.4)
 
     if not has_cv:
-        print(f"[warn] OpenCV not installed; only exact-size matches attempted for '{path}'. Install OpenCV for better tolerance to scaling.")
+        print(f"[warn] OpenCV missing; only exact-size match for '{path}'")
     if last_err:
-        print(f"[warn] click_image('{path}') last error: {last_err}")
+        print(f"[warn] click_image '{path}': {last_err}")
     return False
 
 
@@ -321,28 +332,30 @@ def perform_login(images_dir: str, slow: float) -> bool:
     skipped: list[str] = []
 
     for step_id, description, img_path, timeout in steps:
-        print(f"[info] {step_id}: {description}…")
+        print(f"[info] {step_id} - {description}")
         if not img_path.exists():
-            print(f"[warn] {step_id} omitido: no se encontró el archivo de imagen {img_path}.")
-            skipped.append(f"{step_id} ({description}) - archivo ausente")
+            print(f"[warn] {step_id} skipped: image file missing ({img_path})")
+            skipped.append(f"{step_id} ({description}) - missing file")
             continue
 
         if click_image(str(img_path), timeout=timeout):
             completed.append(step_id)
             continue
 
-        print(f"[warn] {step_id} omitido: la imagen {img_path.name} no apareció en pantalla tras {timeout}s.")
-        skipped.append(f"{step_id} ({description}) - no visible")
+        print(f"[warn] {step_id} skipped: '{img_path.name}' not visible after {timeout}s")
+        skipped.append(f"{step_id} ({description}) - not visible")
 
     if completed:
         if skipped:
-            print(f"[info] Se completaron {len(completed)} pasos: {', '.join(completed)}. "
-                  f"Saltados: {len(skipped)} ({'; '.join(skipped)}).")
+            print(
+                f"[info] Done {len(completed)} step(s): {', '.join(completed)}. "
+                f"Skipped {len(skipped)}: {'; '.join(skipped)}"
+            )
         else:
-            print("[ok] Todos los pasos completados.")
+            print("[ok] All steps completed")
         return True
 
-    print("[error] Ningún paso se pudo ejecutar; revisa las imágenes de referencia y la interfaz actual.")
+    print("[error] No steps succeeded; please verify the reference images and UI state")
     return False
 
 
@@ -386,12 +399,12 @@ def main(argv=None) -> int:
     try:
         if args.action == "schedule":
             target = next_time_today_or_tomorrow(args.tz_name, hh, mm)
-            print(f"[info] Current time: {now_in_tz(args.tz_name).strftime('%Y-%m-%d %H:%M:%S %Z')}")
-            print(f"[info] Waiting until: {target.strftime('%Y-%m-%d %H:%M:%S %Z')}… Press Ctrl+C to cancel.")
+            print(f"[info] Now: {now_in_tz(args.tz_name).strftime('%Y-%m-%d %H:%M:%S %Z')}")
+            print(f"[info] Wait until: {target.strftime('%Y-%m-%d %H:%M:%S %Z')} (Ctrl+C to cancel)")
             wait_until(target, args.tz_name)
 
         if args.dry_run:
-            print("[dry-run] Would perform 5 login clicks using images from:", images_dir)
+            print(f"[dry-run] Would run 5 steps using images from {images_dir}")
             return 0
 
         ok = perform_login(images_dir, args.slow)
