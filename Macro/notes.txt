@@ -1,4 +1,0 @@
-# script for packing with pyinstaller / do all in Downloads with python3
-
-/Library/Frameworks/Python.framework/Versions/3.13/bin/python3 -m PyInstaller --windowed --name "CoreOTA_Macro" --icon=icons.icns --add-data "renatos_macro_templates:renatos_macro_templates" main.py
-
