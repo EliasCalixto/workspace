@@ -99,28 +99,33 @@ def create_api_onboarding(
         ],
         columns=["Account ID", "Managed by"],
     ).to_csv(csv_out, index=False)
+    
+    with open("EIDs_list.txt", "w") as file:
+        file.write(f"")
 
 
-def create_simple_disconnection(
-    case_id: str, account_id: str, hotel_ids: Iterable[str], base_path: str
-) -> None:
+def create_simple_disconnection(case_id: str, account_id: str, hotel_ids: Iterable[str], base_path: str) -> None:
     dirs = _prepare_case_dir(base_path, case_id)
     template_dir = TEMPLATES["Simple Disconnection"]
 
     df = pd.read_excel(
         os.path.join(template_dir, "testsimpledisc_disconnection import.xlsx")
     )
+    
     df_out = _duplicate_rows(df, hotel_ids, case_id, account_id)
     if "Expedia ID" in df_out.columns:
         df_out.rename(columns={"Expedia ID": "Hotel ID"}, inplace=True)
+    
     out_xlsx = os.path.join(
         dirs["case"], _prefix_name(case_id, "disconnection import.xlsx")
     )
+   
     df_out.to_excel(out_xlsx, index=False)
 
     csv_out = os.path.join(
         dirs["case"], _prefix_name(case_id, "delete managedBy.csv")
     )
+    
     pd.DataFrame(
         [
             {"Account ID": hid, "Managed by": ""}
@@ -129,6 +134,7 @@ def create_simple_disconnection(
         columns=["Account ID", "Managed by"],
     ).to_csv(csv_out, index=False)
 
+    
 
 def create_bmc_exports(
     case_id: str, account_id: str, hotel_ids: Iterable[str], base_path: str
