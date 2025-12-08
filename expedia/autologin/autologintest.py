@@ -55,7 +55,7 @@ def main() -> int:
         with autologin.keep_screen_awake():
             autologin.wait_until(target_dt)
             autologin.LOGGER.info("Starting UI automation test steps.")
-            autologin.run_sequence(images, skip_last=True)
+            autologin.run_sequence(images, skip_last=True, refresh_first=True)
             autologin.LOGGER.info("Test automation completed without submission.")
     except KeyboardInterrupt:
         autologin.LOGGER.warning("Interrupted by user. Exiting early.")

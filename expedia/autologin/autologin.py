@@ -25,8 +25,8 @@ IMAGE_SEQUENCE = [
 ]
 TARGET_TZ = "America/Lima"
 TARGET_HOUR = 7
-TARGET_MINUTE = 29
-FIND_TIMEOUT_SECONDS = 25
+TARGET_MINUTE = 25
+FIND_TIMEOUT_SECONDS = 20
 
 
 def configure_logging(verbose: bool = False) -> None:
@@ -146,6 +146,16 @@ def ensure_pyautogui():
     return pyautogui, 0.9, (scale_x, scale_y)
 
 
+def refresh_browser(pyautogui, wait_seconds: float = 3.0) -> None:
+    modifier = "command" if sys.platform == "darwin" else "ctrl"
+    LOGGER.info("Refreshing browser with %s+R and waiting %.1f seconds.", modifier, wait_seconds)
+    try:
+        pyautogui.hotkey(modifier, "r")
+        time.sleep(wait_seconds)
+    except Exception as exc:
+        LOGGER.warning("Browser refresh hotkey failed: %s", exc)
+
+
 def locate_and_click(pyautogui, image_path: Path, confidence, scale):
     start = time.monotonic()
     deadline = start + FIND_TIMEOUT_SECONDS
@@ -189,8 +199,10 @@ def locate_and_click(pyautogui, image_path: Path, confidence, scale):
     return False
 
 
-def run_sequence(images, skip_last: bool = False):
+def run_sequence(images, skip_last: bool = False, refresh_first: bool = False):
     pyautogui, confidence, scale = ensure_pyautogui()
+    if refresh_first:
+        refresh_browser(pyautogui)
     sequence = images[:-1] if skip_last and len(images) > 1 else images
     if skip_last and len(images) > 0:
         LOGGER.info("Skipping final step (%s) in this run.", images[-1].name)
@@ -219,7 +231,7 @@ def main() -> int:
         with keep_screen_awake():
             wait_until(target_dt)
             LOGGER.info("Starting UI automation steps.")
-            run_sequence(images)
+            run_sequence(images, refresh_first=True)
             LOGGER.info("Automation completed.")
     except KeyboardInterrupt:
         LOGGER.warning("Interrupted by user. Exiting early.")
