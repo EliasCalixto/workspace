@@ -88,9 +88,10 @@ def wait_until(target_dt: datetime) -> None:
 @contextmanager
 def keep_screen_awake():
     process = None
+    caffeinate_cmd = ["caffeinate", "-d", "-i", "-s"]  # keep display and system awake while on AC power
     try:
-        process = subprocess.Popen(["caffeinate"])
-        LOGGER.info("Started caffeinate to keep the Mac awake (PID %s).", process.pid)
+        process = subprocess.Popen(caffeinate_cmd)
+        LOGGER.info("Started caffeinate %s to keep the Mac awake (PID %s).", " ".join(caffeinate_cmd[1:]), process.pid)
     except FileNotFoundError:
         LOGGER.warning("caffeinate binary not found; relying on natural activity to prevent sleep.")
     try:
