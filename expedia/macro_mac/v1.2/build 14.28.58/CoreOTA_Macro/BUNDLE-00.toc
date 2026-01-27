@@ -1,0 +1,3 @@
+([('CoreOTA_Macro',
+   '/Users/darkesthj/Downloads/v1.2/dist/CoreOTA_Macro',
+   'EXECUTABLE')],)
