@@ -5,9 +5,49 @@ import logging
 import subprocess
 import sys
 import time
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.header import Header
 from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+
+
+def send_email_confirmation(success: bool = True, *, is_test: bool = False, details: str = "") -> None:
+    remitente = "eliascalixto989@gmail.com"
+    password = "memf ogpf rwbl qcdk"
+    destinatario = "eliascalixto989@gmail.com"
+
+    run_type = "Test" if is_test else "Autologin"
+    status_emoji = "✅" if success else "❌"
+    status_text = "Succeeded" if success else "Failed"
+    result_text = "Se ejecuto correctamente." if success else "No se ejecuto correctamente."
+    executed_at = datetime.now(load_timezone(TARGET_TZ)).strftime("%Y-%m-%d %H:%M:%S %Z")
+
+    mensaje = MIMEMultipart()
+    mensaje["From"] = remitente
+    mensaje["To"] = destinatario
+    mensaje["Subject"] = Header(f"{status_emoji} {run_type} {status_text}", "utf-8") # type: ignore
+
+    body_lines = [
+        f"Tipo de ejecucion: {run_type}",
+        f"Hora: {executed_at}",
+        f"Estado: {status_emoji} {result_text}",
+    ]
+    if details:
+        body_lines.append(f"Detalle: {details}")
+    cuerpo = "\n".join(body_lines)
+    mensaje.attach(MIMEText(cuerpo, "plain", "utf-8"))
+
+    try:
+        with smtplib.SMTP("smtp.gmail.com", 587, timeout=20) as servidor:
+            servidor.starttls()
+            servidor.login(remitente, password)
+            servidor.send_message(mensaje)
+        LOGGER.info("Email notification sent: %s %s", run_type, status_text)
+    except Exception as exc:
+        LOGGER.error("Unable to send email notification: %s", exc)
 
 try:  # Python 3.9+
     from zoneinfo import ZoneInfo
@@ -23,6 +63,8 @@ IMAGE_SEQUENCE = [
     "step4_login.png",
     "step5_submit.png",
 ]
+STEP_LOGIN_IMAGE = "step4_login.png"
+STEP_SUBMIT_IMAGE = "step5_submit.png"
 TARGET_TZ = "America/Lima"
 TARGET_HOUR = 7
 TARGET_MINUTE = 25
@@ -207,8 +249,18 @@ def run_sequence(images, skip_last: bool = False, refresh_first: bool = False):
     sequence = images[:-1] if skip_last and len(images) > 1 else images
     if skip_last and len(images) > 0:
         LOGGER.info("Skipping final step (%s) in this run.", images[-1].name)
+    clicked_steps = []
+    missing_steps = []
     for image_path in sequence:
-        locate_and_click(pyautogui, image_path, confidence, scale)
+        if locate_and_click(pyautogui, image_path, confidence, scale):
+            clicked_steps.append(image_path.name)
+        else:
+            missing_steps.append(image_path.name)
+    if missing_steps:
+        LOGGER.warning("Sequence completed with missing steps: %s", ", ".join(missing_steps))
+    else:
+        LOGGER.info("Sequence completed successfully.")
+    return len(missing_steps) == 0, missing_steps, clicked_steps
 
 
 def parse_args():
@@ -221,7 +273,6 @@ def main() -> int:
     args = parse_args()
     configure_logging(verbose=args.verbose)
     images = resolve_images(IMAGE_SEQUENCE)
-    ensure_images_exist(images)
     target_dt = next_run_datetime(TARGET_HOUR, TARGET_MINUTE, TARGET_TZ)
     LOGGER.info(
         "Automation configured for %s targeting %s.",
@@ -229,15 +280,55 @@ def main() -> int:
         ", ".join(image.name for image in images),
     )
     try:
+        ensure_images_exist(images)
         with keep_screen_awake():
             wait_until(target_dt)
             LOGGER.info("Starting UI automation steps.")
-            run_sequence(images, refresh_first=True)
+            _all_steps_ok, missing_steps, clicked_steps = run_sequence(images, refresh_first=True)
             LOGGER.info("Automation completed.")
+        submit_clicked = STEP_SUBMIT_IMAGE in clicked_steps
+        if submit_clicked:
+            details = "Submit ejecutado correctamente."
+            if missing_steps:
+                details = f"{details} Pasos opcionales no encontrados: {', '.join(missing_steps)}"
+            send_email_confirmation(
+                success=True,
+                is_test=False,
+                details=details,
+            )
+            return 0
+        detail_parts = [f"No se pudo confirmar click en {STEP_SUBMIT_IMAGE}."]
+        if missing_steps:
+            detail_parts.append(f"Pasos no encontrados: {', '.join(missing_steps)}")
+        send_email_confirmation(
+            success=False,
+            is_test=False,
+            details=" ".join(detail_parts),
+        )
+        return 1
     except KeyboardInterrupt:
         LOGGER.warning("Interrupted by user. Exiting early.")
+        send_email_confirmation(
+            success=False,
+            is_test=False,
+            details="Ejecucion interrumpida por el usuario.",
+        )
         return 1
-    return 0
+    except SystemExit as exc:
+        send_email_confirmation(
+            success=False,
+            is_test=False,
+            details=f"Ejecucion abortada con codigo: {exc.code}",
+        )
+        return exc.code if isinstance(exc.code, int) else 1
+    except Exception as exc:
+        LOGGER.exception("Automation failed with an unexpected error.")
+        send_email_confirmation(
+            success=False,
+            is_test=False,
+            details=f"Error inesperado: {exc}",
+        )
+        return 1
 
 
 if __name__ == "__main__":
