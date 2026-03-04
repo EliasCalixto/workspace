@@ -263,6 +263,12 @@ def run_sequence(images, skip_last: bool = False, refresh_first: bool = False):
     return len(missing_steps) == 0, missing_steps, clicked_steps
 
 
+def wait_until_manual_stop() -> None:
+    LOGGER.info("Autologin finalizado. Manteniendo el script activo. Presiona Ctrl+C para detener.")
+    while True:
+        time.sleep(300)
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Run the scheduled autologin workflow.")
     parser.add_argument("--verbose", action="store_true", help="Enable debug logging output.")
@@ -279,54 +285,64 @@ def main() -> int:
         target_dt.strftime("%Y-%m-%d %H:%M %Z"),
         ", ".join(image.name for image in images),
     )
+    keepalive_started = False
+    run_result_code = 1
     try:
-        ensure_images_exist(images)
         with keep_screen_awake():
-            wait_until(target_dt)
-            LOGGER.info("Starting UI automation steps.")
-            _all_steps_ok, missing_steps, clicked_steps = run_sequence(images, refresh_first=True)
-            LOGGER.info("Automation completed.")
-        submit_clicked = STEP_SUBMIT_IMAGE in clicked_steps
-        if submit_clicked:
-            details = "Submit ejecutado correctamente."
-            if missing_steps:
-                details = f"{details} Pasos opcionales no encontrados: {', '.join(missing_steps)}"
-            send_email_confirmation(
-                success=True,
-                is_test=False,
-                details=details,
-            )
-            return 0
-        detail_parts = [f"No se pudo confirmar click en {STEP_SUBMIT_IMAGE}."]
-        if missing_steps:
-            detail_parts.append(f"Pasos no encontrados: {', '.join(missing_steps)}")
-        send_email_confirmation(
-            success=False,
-            is_test=False,
-            details=" ".join(detail_parts),
-        )
-        return 1
+            try:
+                ensure_images_exist(images)
+                wait_until(target_dt)
+                LOGGER.info("Starting UI automation steps.")
+                _all_steps_ok, missing_steps, clicked_steps = run_sequence(images, refresh_first=True)
+                LOGGER.info("Automation completed.")
+                submit_clicked = STEP_SUBMIT_IMAGE in clicked_steps
+                if submit_clicked:
+                    run_result_code = 0
+                    details = "Submit ejecutado correctamente."
+                    if missing_steps:
+                        details = f"{details} Pasos opcionales no encontrados: {', '.join(missing_steps)}"
+                    send_email_confirmation(
+                        success=True,
+                        is_test=False,
+                        details=details,
+                    )
+                else:
+                    detail_parts = [f"No se pudo confirmar click en {STEP_SUBMIT_IMAGE}."]
+                    if missing_steps:
+                        detail_parts.append(f"Pasos no encontrados: {', '.join(missing_steps)}")
+                    send_email_confirmation(
+                        success=False,
+                        is_test=False,
+                        details=" ".join(detail_parts),
+                    )
+            except KeyboardInterrupt:
+                raise
+            except SystemExit as exc:
+                run_result_code = exc.code if isinstance(exc.code, int) else 1
+                send_email_confirmation(
+                    success=False,
+                    is_test=False,
+                    details=f"Ejecucion abortada con codigo: {exc.code}",
+                )
+            except Exception as exc:
+                LOGGER.exception("Automation failed with an unexpected error.")
+                send_email_confirmation(
+                    success=False,
+                    is_test=False,
+                    details=f"Error inesperado: {exc}",
+                )
+            keepalive_started = True
+            wait_until_manual_stop()
+        return run_result_code
     except KeyboardInterrupt:
+        if keepalive_started:
+            LOGGER.info("Detenido manualmente por el usuario.")
+            return run_result_code
         LOGGER.warning("Interrupted by user. Exiting early.")
         send_email_confirmation(
             success=False,
             is_test=False,
             details="Ejecucion interrumpida por el usuario.",
-        )
-        return 1
-    except SystemExit as exc:
-        send_email_confirmation(
-            success=False,
-            is_test=False,
-            details=f"Ejecucion abortada con codigo: {exc.code}",
-        )
-        return exc.code if isinstance(exc.code, int) else 1
-    except Exception as exc:
-        LOGGER.exception("Automation failed with an unexpected error.")
-        send_email_confirmation(
-            success=False,
-            is_test=False,
-            details=f"Error inesperado: {exc}",
         )
         return 1
 
