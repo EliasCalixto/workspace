@@ -31,7 +31,8 @@ python3 autologintest.py --time 14:30 # dry-run at chosen time, no submit
 
 Notes when editing:
 - The PNG filenames in `IMAGE_SEQUENCE`, `STEP_LOGIN_IMAGE`, and `STEP_SUBMIT_IMAGE` are **load-bearing**: they must match files on disk, and `autologintest.py` keys its success check off `STEP_LOGIN_IMAGE` while `autologin.py` keys success off `STEP_SUBMIT_IMAGE`. Renaming a PNG without updating those constants silently breaks email confirmation logic.
-- `locate_and_click` applies a screen-vs-screenshot scale factor to handle Retina/HiDPI. Don't strip this — coordinates from `pyautogui.center()` are in screenshot pixels and need scaling for `moveTo`.
+- `locate_and_click` first tries a multi-monitor path (Quartz + OpenCV): it captures every active display, template-matches at `TEMPLATE_SCALES` (1x/0.5x/2x, so templates captured on the Retina panel still match on 1x external monitors), and clicks via Quartz events in global coordinates — required because `pyautogui.moveTo` clamps to the main display. If Quartz/cv2 are missing it falls back to the original single-screen `pyautogui.locateOnScreen` path, which applies a screen-vs-screenshot scale factor for Retina/HiDPI. Don't strip either — coordinates from `pyautogui.center()` are in screenshot pixels and need scaling for `moveTo`.
+- Run with the `workspace` conda env (`/opt/homebrew/anaconda3/envs/workspace/bin/python3`) — it has `pyautogui`, `opencv`, and `pyobjc`/Quartz; the system `python3` does not.
 - After the sequence runs, the script intentionally calls `wait_until_manual_stop()` and blocks forever so `caffeinate` keeps holding the machine awake. This is by design; killing it with Ctrl+C is the expected exit path.
 - Gmail credentials are embedded in `send_email_confirmation` as an app password. If it stops working, rotate the app password and update the literal in both `autologin.py` and the email body strings.
 

@@ -69,6 +69,11 @@ TARGET_TZ = "America/Lima"
 TARGET_HOUR = 7
 TARGET_MINUTE = 25
 FIND_TIMEOUT_SECONDS = 20
+# Multi-monitor matching: templates may have been captured on a display with a
+# different pixel density (e.g. Retina 2x vs external 1x), so try these scales.
+TEMPLATE_SCALES = (1.0, 0.5, 2.0)
+MATCH_CONFIDENCE = 0.85
+MAX_DISPLAYS = 16
 
 
 def configure_logging(verbose: bool = False) -> None:
@@ -199,13 +204,142 @@ def refresh_browser(pyautogui, wait_seconds: float = 3.0) -> None:
         LOGGER.warning("Browser refresh hotkey failed: %s", exc)
 
 
+def _load_multimonitor_backend():
+    """Return (Quartz, cv2, numpy) when all are importable, else None."""
+    try:
+        import Quartz  # type: ignore
+        import cv2  # type: ignore
+        import numpy  # type: ignore
+    except ImportError as exc:
+        LOGGER.debug("Multi-monitor backend unavailable (%s); using single-screen fallback.", exc)
+        return None
+    return Quartz, cv2, numpy
+
+
+def _capture_displays(backend):
+    """Capture every active display.
+
+    Yields (origin_x_pts, origin_y_pts, gray_pixels, px_per_pt) per display,
+    where origin is the display's top-left corner in global point coordinates.
+    """
+    Quartz, cv2, np = backend
+    err, display_ids, count = Quartz.CGGetActiveDisplayList(MAX_DISPLAYS, None, None)
+    if err != 0:
+        LOGGER.warning("CGGetActiveDisplayList failed with error %s.", err)
+        return
+    for display_id in display_ids[:count]:
+        bounds = Quartz.CGDisplayBounds(display_id)
+        image = Quartz.CGDisplayCreateImage(display_id)
+        if image is None:
+            LOGGER.warning("Could not capture display %s (screen recording permission?).", display_id)
+            continue
+        width = Quartz.CGImageGetWidth(image)
+        height = Quartz.CGImageGetHeight(image)
+        bytes_per_row = Quartz.CGImageGetBytesPerRow(image)
+        data = Quartz.CGDataProviderCopyData(Quartz.CGImageGetDataProvider(image))
+        buf = np.frombuffer(data, dtype=np.uint8)
+        if buf.size < bytes_per_row * height:
+            LOGGER.warning("Unexpected pixel buffer size for display %s; skipping.", display_id)
+            continue
+        # Rows may be padded, so reshape by bytes_per_row and crop to real width.
+        bgra = buf[: bytes_per_row * height].reshape(height, bytes_per_row // 4, 4)[:, :width, :]
+        gray = cv2.cvtColor(bgra, cv2.COLOR_BGRA2GRAY)
+        px_per_pt = width / bounds.size.width if bounds.size.width else 1.0
+        yield bounds.origin.x, bounds.origin.y, gray, px_per_pt
+
+
+def _find_on_displays(backend, image_path: Path):
+    """Search all displays for the template at several scales.
+
+    Returns (global_x_pts, global_y_pts, score, template_scale) for the best
+    match at or above MATCH_CONFIDENCE, else None.
+    """
+    _Quartz, cv2, _np = backend
+    template = cv2.imread(str(image_path), cv2.IMREAD_GRAYSCALE)
+    if template is None:
+        LOGGER.error("Could not read template image %s.", image_path)
+        return None
+    best = None
+    for origin_x, origin_y, gray, px_per_pt in _capture_displays(backend):
+        for tpl_scale in TEMPLATE_SCALES:
+            if tpl_scale == 1.0:
+                resized = template
+            else:
+                interp = cv2.INTER_AREA if tpl_scale < 1.0 else cv2.INTER_LINEAR
+                resized = cv2.resize(template, None, fx=tpl_scale, fy=tpl_scale, interpolation=interp)
+            tpl_h, tpl_w = resized.shape
+            if tpl_h > gray.shape[0] or tpl_w > gray.shape[1] or tpl_h < 4 or tpl_w < 4:
+                continue
+            result = cv2.matchTemplate(gray, resized, cv2.TM_CCOEFF_NORMED)
+            _min_val, max_val, _min_loc, max_loc = cv2.minMaxLoc(result)
+            if best is None or max_val > best[2]:
+                center_px_x = max_loc[0] + tpl_w / 2.0
+                center_px_y = max_loc[1] + tpl_h / 2.0
+                global_x = origin_x + center_px_x / px_per_pt
+                global_y = origin_y + center_px_y / px_per_pt
+                best = (global_x, global_y, max_val, tpl_scale)
+    if best is not None and best[2] >= MATCH_CONFIDENCE:
+        return best
+    if best is not None:
+        LOGGER.debug(
+            "Best candidate for %s scored %.3f (< %.2f threshold).",
+            image_path.name,
+            best[2],
+            MATCH_CONFIDENCE,
+        )
+    return None
+
+
+def _click_global(Quartz, x: float, y: float) -> None:
+    """Move and left-click at global point coordinates, valid on any display."""
+    point = (x, y)
+    Quartz.CGWarpMouseCursorPosition(point)
+    move = Quartz.CGEventCreateMouseEvent(None, Quartz.kCGEventMouseMoved, point, Quartz.kCGMouseButtonLeft)
+    Quartz.CGEventPost(Quartz.kCGHIDEventTap, move)
+    time.sleep(0.3)
+    down = Quartz.CGEventCreateMouseEvent(None, Quartz.kCGEventLeftMouseDown, point, Quartz.kCGMouseButtonLeft)
+    up = Quartz.CGEventCreateMouseEvent(None, Quartz.kCGEventLeftMouseUp, point, Quartz.kCGMouseButtonLeft)
+    Quartz.CGEventPost(Quartz.kCGHIDEventTap, down)
+    time.sleep(0.05)
+    Quartz.CGEventPost(Quartz.kCGHIDEventTap, up)
+
+
 def locate_and_click(pyautogui, image_path: Path, confidence, scale):
     start = time.monotonic()
     deadline = start + FIND_TIMEOUT_SECONDS
     LOGGER.info("Searching for %s (timeout %ss).", image_path.name, FIND_TIMEOUT_SECONDS)
+    backend = _load_multimonitor_backend()
     location = None
     last_log = 0.0
     while time.monotonic() < deadline:
+        if backend is not None:
+            try:
+                found = _find_on_displays(backend, image_path)
+            except Exception as exc:
+                LOGGER.error("Error while scanning displays for %s: %s", image_path.name, exc)
+                break
+            if found is not None:
+                global_x, global_y, score, tpl_scale = found
+                LOGGER.info(
+                    "Found %s at global (%.1f, %.1f) (score %.3f, template scale %.2fx). Moving and clicking.",
+                    image_path.name,
+                    global_x,
+                    global_y,
+                    score,
+                    tpl_scale,
+                )
+                _click_global(backend[0], global_x, global_y)
+                remaining = deadline - time.monotonic()
+                if remaining > 0:
+                    LOGGER.info("Waiting %.1f seconds before the next step.", remaining)
+                    time.sleep(remaining)
+                return True
+            now = time.monotonic()
+            if now - last_log >= 5:
+                LOGGER.debug("Still searching for %s...", image_path.name)
+                last_log = now
+            time.sleep(1.0)
+            continue
         try:
             if confidence is not None:
                 location = pyautogui.locateOnScreen(str(image_path), confidence=confidence)
