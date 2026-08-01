@@ -2,8 +2,10 @@
 """Scheduled UI automation to keep the Mac awake and run at 07:29 Lima time."""
 import argparse
 import logging
+import re
 import subprocess
 import sys
+import threading
 import time
 import smtplib
 from email.mime.text import MIMEText
@@ -14,21 +16,28 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 
-def send_email_confirmation(success: bool = True, *, is_test: bool = False, details: str = "") -> None:
+def send_email_confirmation(success=True, *, is_test: bool = False, details: str = "", label=None) -> None:
     remitente = "eliascalixto989@gmail.com"
     password = "memf ogpf rwbl qcdk"
     destinatario = "eliascalixto989@gmail.com"
 
-    run_type = "Test" if is_test else "Autologin"
-    status_emoji = "✅" if success else "❌"
-    status_text = "Succeeded" if success else "Failed"
-    result_text = "Se ejecuto correctamente." if success else "No se ejecuto correctamente."
+    run_type = label or ("Test" if is_test else "Autologin")
+    if success is None:  # intentionally skipped, not an error
+        status_emoji, status_text, result_text = "⚠️", "Skipped", "Se omitio."
+    elif success:
+        status_emoji, status_text, result_text = "✅", "Succeeded", "Se ejecuto correctamente."
+    else:
+        status_emoji, status_text, result_text = "❌", "Failed", "No se ejecuto correctamente."
     executed_at = datetime.now(load_timezone(TARGET_TZ)).strftime("%Y-%m-%d %H:%M:%S %Z")
+
+    # On success the subject is just the event label (e.g. "✅ Login",
+    # "✅ Lunch Started"); on failure/skip the status is appended for clarity.
+    subject_text = run_type if success else f"{run_type} ({status_text})"
 
     mensaje = MIMEMultipart()
     mensaje["From"] = remitente
     mensaje["To"] = destinatario
-    mensaje["Subject"] = Header(f"{status_emoji} {run_type} {status_text}", "utf-8") # type: ignore
+    mensaje["Subject"] = Header(f"{status_emoji} {subject_text}", "utf-8") # type: ignore
 
     body_lines = [
         f"Tipo de ejecucion: {run_type}",
@@ -56,24 +65,79 @@ except ImportError:  # pragma: no cover - Python <3.9 fallback
 
 LOGGER = logging.getLogger("autologin")
 BASE_DIR = Path(__file__).resolve().parent
-IMAGE_SEQUENCE = [
-    "step1_bluelogin.png",
-    "step2_here.png",
-    "step3_menu.png",
-    "step4_login.png",
-    "step5_submit.png",
-]
-STEP_LOGIN_IMAGE = "step4_login.png"
-STEP_SUBMIT_IMAGE = "step5_submit.png"
+
+# Individual template names.
+STEP_LOGIN_IMAGE = "step4_login.png"   # "Log In" labor event (clock in / return from lunch)
+STEP_SUBMIT_IMAGE = "step5_submit.png"  # magenta "Submit" confirmation button
+STEP_LUNCH_IMAGE = "step_lunch.png"     # "Lunch" labor event (start lunch)
+
+# Shared prefix for every labor-event job: refresh + portal re-login (only
+# clicked if the session logged out) + open the name dropdown. step1/step2 are
+# skipped after the find timeout when the portal is still logged in.
+_LOGIN_PREFIX = ["step1_bluelogin.png", "step2_here.png", "step3_menu.png"]
+MORNING_SEQUENCE = _LOGIN_PREFIX + [STEP_LOGIN_IMAGE, STEP_SUBMIT_IMAGE]
+LUNCH_SEQUENCE = _LOGIN_PREFIX + [STEP_LUNCH_IMAGE, STEP_SUBMIT_IMAGE]
+POSTLUNCH_SEQUENCE = _LOGIN_PREFIX + [STEP_LOGIN_IMAGE, STEP_SUBMIT_IMAGE]
+
+# Kept for backward compatibility (autologintest.py imports IMAGE_SEQUENCE).
+IMAGE_SEQUENCE = MORNING_SEQUENCE
+
 TARGET_TZ = "America/Lima"
+# Morning login.
 TARGET_HOUR = 7
 TARGET_MINUTE = 25
+# Start lunch.
+LUNCH_HOUR = 12
+LUNCH_MINUTE = 30
+# Return from lunch (log back in).
+POSTLUNCH_HOUR = 13
+POSTLUNCH_MINUTE = 14
 FIND_TIMEOUT_SECONDS = 20
+# How long to watch for real keyboard/mouse input (with the jiggler paused)
+# when deciding whether the user is present and lunch should be skipped.
+PRESENCE_PROBE_SECONDS = 20.0
+# How often the anti-lock jiggler nudges the cursor. caffeinate keeps the
+# display powered but does NOT stop the macOS screen saver from starting, and
+# once it starts (askForPassword=1) the screen locks and the login page is no
+# longer visible. A synthetic move on this interval resets the screen-saver
+# idle timer so it never engages during the long wait before TARGET time.
+# Synthetic mouse events only reset the timer intermittently (~1 in 3 land), so
+# a short 10s interval is used to keep the measured idle ceiling well under 10s
+# — far below any screen-saver threshold (60s minimum, 20 min default).
+JIGGLE_INTERVAL_SECONDS = 10.0
 # Multi-monitor matching: templates may have been captured on a display with a
 # different pixel density (e.g. Retina 2x vs external 1x), so try these scales.
 TEMPLATE_SCALES = (1.0, 0.5, 2.0)
 MATCH_CONFIDENCE = 0.85
 MAX_DISPLAYS = 16
+
+
+class ScheduledJob:
+    """One timed labor-event marking (morning login, lunch, post-lunch login)."""
+
+    def __init__(self, key, label, hour, minute, image_names, success_image,
+                 skip_if_user_active=False, requires=None):
+        self.key = key                          # short id, e.g. "lunch"
+        self.label = label                      # human label used in logs/email
+        self.hour = hour
+        self.minute = minute
+        self.image_names = image_names          # click sequence for this job
+        self.success_image = success_image      # its click confirms success
+        self.skip_if_user_active = skip_if_user_active
+        self.requires = requires                # key of a job that must succeed first
+
+
+def build_jobs():
+    """The daily schedule, in definition order."""
+    return [
+        ScheduledJob("morning", "Login", TARGET_HOUR, TARGET_MINUTE,
+                     MORNING_SEQUENCE, STEP_SUBMIT_IMAGE),
+        ScheduledJob("lunch", "Lunch Started", LUNCH_HOUR, LUNCH_MINUTE,
+                     LUNCH_SEQUENCE, STEP_SUBMIT_IMAGE, skip_if_user_active=True),
+        ScheduledJob("postlunch", "Lunch Finished", POSTLUNCH_HOUR, POSTLUNCH_MINUTE,
+                     POSTLUNCH_SEQUENCE, STEP_SUBMIT_IMAGE,
+                     skip_if_user_active=True, requires="lunch"),
+    ]
 
 
 def configure_logging(verbose: bool = False) -> None:
@@ -132,6 +196,148 @@ def wait_until(target_dt: datetime) -> None:
         time.sleep(sleep_for)
 
 
+def _nudge_cursor() -> None:
+    """Physically move the cursor a couple of pixels to reset the idle timer.
+
+    A purely *synthetic* mouse-moved event (CGEventPost) is unreliable: testing
+    showed it can fail to register as activity for nearly a minute at a time,
+    letting the idle timer climb past the screen-saver threshold and lock the
+    screen. Actually relocating the cursor with CGWarpMouseCursorPosition resets
+    the idle timer on every call (measured ceiling < 8s), so we warp the cursor
+    and also post an event as a belt-and-suspenders. The move direction
+    alternates so the cursor never drifts more than a couple of pixels. Works
+    across all monitors (global coordinates); falls back to pyautogui.
+    """
+    try:
+        import Quartz  # type: ignore
+    except ImportError:
+        try:
+            import pyautogui  # type: ignore
+            sign = -getattr(_nudge_cursor, "_sign", 1)
+            _nudge_cursor._sign = sign
+            pyautogui.moveRel(2 * sign, 0, duration=0)
+        except Exception as exc:  # pragma: no cover - best-effort keep-awake
+            LOGGER.debug("Cursor nudge (pyautogui) failed: %s", exc)
+        return
+    try:
+        sign = -getattr(_nudge_cursor, "_sign", 1)
+        _nudge_cursor._sign = sign
+        loc = Quartz.CGEventGetLocation(Quartz.CGEventCreate(None))
+        pt = (loc.x + 2 * sign, loc.y)
+        # Real cursor reposition — this is what reliably counts as user activity.
+        Quartz.CGWarpMouseCursorPosition(pt)
+        event = Quartz.CGEventCreateMouseEvent(
+            None, Quartz.kCGEventMouseMoved, pt, Quartz.kCGMouseButtonLeft
+        )
+        Quartz.CGEventPost(Quartz.kCGHIDEventTap, event)
+        # Keep the physical mouse and the on-screen cursor in sync after warping.
+        Quartz.CGAssociateMouseAndMouseCursorPosition(True)
+    except Exception as exc:  # pragma: no cover - best-effort keep-awake
+        LOGGER.debug("Cursor nudge (Quartz) failed: %s", exc)
+
+
+class _ActivityJiggler:
+    """Background thread that nudges the cursor on an interval to keep the
+    screen saver (and therefore the login lock) from ever engaging."""
+
+    def __init__(self, interval: float = JIGGLE_INTERVAL_SECONDS):
+        self.interval = interval
+        self._stop = threading.Event()
+        self._paused = threading.Event()
+        self._thread = None
+
+    def _run(self) -> None:
+        # Nudge immediately so a screen saver that is about to start is reset.
+        while True:
+            if not self._paused.is_set():
+                _nudge_cursor()
+            if self._stop.wait(self.interval):
+                return
+
+    def start(self) -> None:
+        if self._thread is not None:
+            return
+        self._stop.clear()
+        self._paused.clear()
+        self._thread = threading.Thread(target=self._run, name="anti-lock-jiggler", daemon=True)
+        self._thread.start()
+        LOGGER.info("Anti-lock jiggler started (cursor nudge every %.0fs).", self.interval)
+
+    def pause(self) -> None:
+        self._paused.set()
+
+    def resume(self) -> None:
+        self._paused.clear()
+
+    def stop(self) -> None:
+        self._stop.set()
+        if self._thread is not None:
+            self._thread.join(timeout=2)
+            self._thread = None
+        LOGGER.info("Anti-lock jiggler stopped.")
+
+
+_JIGGLER = _ActivityJiggler()
+
+
+def screen_is_locked():
+    """True/False if the login lock screen is active, or None if unknown."""
+    try:
+        import Quartz  # type: ignore
+        info = Quartz.CGSessionCopyCurrentDictionary()
+        if not info:
+            return None
+        return bool(info.get("CGSSessionScreenIsLocked", 0))
+    except Exception as exc:
+        LOGGER.debug("Could not read screen lock state: %s", exc)
+        return None
+
+
+def wake_display() -> None:
+    """Dismiss an active (but unlocked) screen saver by injecting activity."""
+    _nudge_cursor()
+    time.sleep(1.0)
+
+
+def _hid_idle_seconds():
+    """Seconds since the last real HID (keyboard/mouse) event, or None."""
+    try:
+        out = subprocess.check_output(["ioreg", "-r", "-c", "IOHIDSystem"], text=True)
+        match = re.search(r'"HIDIdleTime"\s*=\s*(\d+)', out)
+        if match:
+            return int(match.group(1)) / 1_000_000_000
+    except Exception as exc:
+        LOGGER.debug("Could not read HID idle time: %s", exc)
+    return None
+
+
+def user_is_active(probe_seconds: float = PRESENCE_PROBE_SECONDS) -> bool:
+    """True if real keyboard/mouse input happened during a short probe window.
+
+    The jiggler is paused first so its own synthetic nudges don't count as
+    activity. We then wait `probe_seconds` and read the HID idle time: with no
+    user it climbs to about `probe_seconds`; if it stays low, the user moved the
+    mouse or typed and is therefore using the PC.
+    """
+    _JIGGLER.pause()
+    try:
+        time.sleep(probe_seconds)
+        idle = _hid_idle_seconds()
+    finally:
+        _JIGGLER.resume()
+    if idle is None:
+        LOGGER.warning(
+            "No se pudo leer el tiempo de inactividad; se asume usuario AUSENTE para no bloquear la automatizacion."
+        )
+        return False
+    active = idle < (probe_seconds - 5.0)
+    LOGGER.info(
+        "Chequeo de presencia: HID idle=%.1fs tras %.0fs con jiggler en pausa -> usuario %s.",
+        idle, probe_seconds, "ACTIVO" if active else "ausente",
+    )
+    return active
+
+
 @contextmanager
 def keep_screen_awake():
     process = None
@@ -141,9 +347,11 @@ def keep_screen_awake():
         LOGGER.info("Started caffeinate %s to keep the Mac awake (PID %s).", " ".join(caffeinate_cmd[1:]), process.pid)
     except FileNotFoundError:
         LOGGER.warning("caffeinate binary not found; relying on natural activity to prevent sleep.")
+    _JIGGLER.start()
     try:
         yield
     finally:
+        _JIGGLER.stop()
         if process is not None:
             process.terminate()
             try:
@@ -378,23 +586,40 @@ def locate_and_click(pyautogui, image_path: Path, confidence, scale):
 
 def run_sequence(images, skip_last: bool = False, refresh_first: bool = False):
     pyautogui, confidence, scale = ensure_pyautogui()
-    if refresh_first:
-        refresh_browser(pyautogui)
-    sequence = images[:-1] if skip_last and len(images) > 1 else images
-    if skip_last and len(images) > 0:
-        LOGGER.info("Skipping final step (%s) in this run.", images[-1].name)
-    clicked_steps = []
-    missing_steps = []
-    for image_path in sequence:
-        if locate_and_click(pyautogui, image_path, confidence, scale):
-            clicked_steps.append(image_path.name)
-        else:
-            missing_steps.append(image_path.name)
+    # Pause the jiggler so its nudges don't move the cursor mid-click; the
+    # clicking itself keeps the machine active during this short window.
+    _JIGGLER.pause()
+    try:
+        # Make sure the desktop is actually visible before we start clicking.
+        wake_display()
+        locked = screen_is_locked()
+        if locked:
+            LOGGER.error(
+                "Screen is LOCKED at run time: the macOS login screen is showing, "
+                "not the browser, so no steps can be clicked. caffeinate cannot "
+                "unlock a password-protected screen; the anti-lock jiggler is meant "
+                "to keep this from happening on future runs."
+            )
+            return False, [image.name for image in images], [], True
+        if refresh_first:
+            refresh_browser(pyautogui)
+        sequence = images[:-1] if skip_last and len(images) > 1 else images
+        if skip_last and len(images) > 0:
+            LOGGER.info("Skipping final step (%s) in this run.", images[-1].name)
+        clicked_steps = []
+        missing_steps = []
+        for image_path in sequence:
+            if locate_and_click(pyautogui, image_path, confidence, scale):
+                clicked_steps.append(image_path.name)
+            else:
+                missing_steps.append(image_path.name)
+    finally:
+        _JIGGLER.resume()
     if missing_steps:
         LOGGER.warning("Sequence completed with missing steps: %s", ", ".join(missing_steps))
     else:
         LOGGER.info("Sequence completed successfully.")
-    return len(missing_steps) == 0, missing_steps, clicked_steps
+    return len(missing_steps) == 0, missing_steps, clicked_steps, False
 
 
 def wait_until_manual_stop() -> None:
@@ -409,69 +634,84 @@ def parse_args():
     return parser.parse_args()
 
 
+def run_job(job) -> bool:
+    """Run one scheduled job (presence check, sequence, email). True on success."""
+    images = resolve_images(job.image_names)
+    missing_files = [p.name for p in images if not p.exists()]
+    if missing_files:
+        detail = f"Faltan archivos de imagen: {', '.join(missing_files)}"
+        LOGGER.error("%s: %s", job.label, detail)
+        send_email_confirmation(success=False, label=job.label, details=detail)
+        return False
+
+    if job.skip_if_user_active and user_is_active():
+        detail = "Omitido: estabas usando la PC en ese momento (se detecto actividad de teclado/mouse)."
+        LOGGER.info("%s: %s", job.label, detail)
+        send_email_confirmation(success=None, label=job.label, details=detail)
+        return False
+
+    LOGGER.info("Iniciando job: %s", job.label)
+    _all_ok, missing_steps, clicked_steps, screen_locked = run_sequence(images, refresh_first=True)
+    if job.success_image in clicked_steps:
+        details = "Marcacion confirmada (Submit ejecutado)."
+        if missing_steps:
+            details += f" Pasos opcionales no encontrados: {', '.join(missing_steps)}"
+        send_email_confirmation(success=True, label=job.label, details=details)
+        return True
+    detail_parts = []
+    if screen_locked:
+        detail_parts.append("La pantalla estaba BLOQUEADA (login de macOS); no se pudo continuar.")
+    detail_parts.append(f"No se pudo confirmar click en {job.success_image}.")
+    if missing_steps:
+        detail_parts.append(f"Pasos no encontrados: {', '.join(missing_steps)}")
+    send_email_confirmation(success=False, label=job.label, details=" ".join(detail_parts))
+    return False
+
+
 def main() -> int:
     args = parse_args()
     configure_logging(verbose=args.verbose)
-    images = resolve_images(IMAGE_SEQUENCE)
-    target_dt = next_run_datetime(TARGET_HOUR, TARGET_MINUTE, TARGET_TZ)
+    jobs = build_jobs()
+    # Schedule each job at its next future occurrence and run them in
+    # chronological order, so the script works no matter when it is launched.
+    scheduled = sorted(
+        ((next_run_datetime(job.hour, job.minute, TARGET_TZ), job) for job in jobs),
+        key=lambda pair: pair[0],
+    )
     LOGGER.info(
-        "Automation configured for %s targeting %s.",
-        target_dt.strftime("%Y-%m-%d %H:%M %Z"),
-        ", ".join(image.name for image in images),
+        "Jobs programados: %s",
+        "; ".join(f"{job.label} @ {dt.strftime('%Y-%m-%d %H:%M %Z')}" for dt, job in scheduled),
     )
     keepalive_started = False
-    run_result_code = 1
+    results = {}
     try:
         with keep_screen_awake():
             try:
-                ensure_images_exist(images)
-                wait_until(target_dt)
-                LOGGER.info("Starting UI automation steps.")
-                _all_steps_ok, missing_steps, clicked_steps = run_sequence(images, refresh_first=True)
-                LOGGER.info("Automation completed.")
-                submit_clicked = STEP_SUBMIT_IMAGE in clicked_steps
-                if submit_clicked:
-                    run_result_code = 0
-                    details = "Submit ejecutado correctamente."
-                    if missing_steps:
-                        details = f"{details} Pasos opcionales no encontrados: {', '.join(missing_steps)}"
-                    send_email_confirmation(
-                        success=True,
-                        is_test=False,
-                        details=details,
-                    )
-                else:
-                    detail_parts = [f"No se pudo confirmar click en {STEP_SUBMIT_IMAGE}."]
-                    if missing_steps:
-                        detail_parts.append(f"Pasos no encontrados: {', '.join(missing_steps)}")
-                    send_email_confirmation(
-                        success=False,
-                        is_test=False,
-                        details=" ".join(detail_parts),
-                    )
+                for target_dt, job in scheduled:
+                    wait_until(target_dt)
+                    if job.requires and not results.get(job.requires):
+                        detail = (
+                            f"Omitido: el paso previo '{job.requires}' no se marco, "
+                            "asi que no hay lunch del cual regresar."
+                        )
+                        LOGGER.info("%s: %s", job.label, detail)
+                        send_email_confirmation(success=None, label=job.label, details=detail)
+                        results[job.key] = False
+                        continue
+                    results[job.key] = run_job(job)
+                LOGGER.info("Todos los jobs del dia procesados.")
             except KeyboardInterrupt:
                 raise
-            except SystemExit as exc:
-                run_result_code = exc.code if isinstance(exc.code, int) else 1
-                send_email_confirmation(
-                    success=False,
-                    is_test=False,
-                    details=f"Ejecucion abortada con codigo: {exc.code}",
-                )
             except Exception as exc:
                 LOGGER.exception("Automation failed with an unexpected error.")
-                send_email_confirmation(
-                    success=False,
-                    is_test=False,
-                    details=f"Error inesperado: {exc}",
-                )
+                send_email_confirmation(success=False, details=f"Error inesperado: {exc}")
             keepalive_started = True
             wait_until_manual_stop()
-        return run_result_code
+        return 0 if any(results.values()) else 1
     except KeyboardInterrupt:
         if keepalive_started:
             LOGGER.info("Detenido manualmente por el usuario.")
-            return run_result_code
+            return 0 if any(results.values()) else 1
         LOGGER.warning("Interrupted by user. Exiting early.")
         send_email_confirmation(
             success=False,

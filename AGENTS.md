@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Codex (Codex.ai/code) when working with code in this repository.
 
 ## Repository shape
 
@@ -77,3 +77,7 @@ python3 main.py
 ## templates/ and APM_files/
 
 No code, no build. `templates/` holds master spreadsheets referenced by support workflows; `APM_files/` is per-case archive data (numbered folders, some zipped). Don't edit these to "clean up" — they are working references.
+
+When preparing an APM case file, **always load and verify every requested EID before handing it off**. A case folder or copied template is not "prepared" if its `Hotel ID` / `Account ID` rows are blank. Clear any sample data when appropriate, preserve legitimate template defaults, then verify the final list and order against the request before reporting completion.
+
+For `BMC/BMC1/IMPORT 1 BMC Cloud Property.xlsx`, use the contract target model rather than blindly mirroring every PS&NS field. In particular, when the current row is `Merchant`, leave `Commissions Charged for Taxes`, `Commissions Charged for Fees`, and `Commissions Charged for Cancellations` blank; do not copy the EC commission flags from PS&NS. Set target-model fields according to the requested conversion (a `Dual` row may need `Target Hotel Business Model=Merchant`).

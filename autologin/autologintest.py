@@ -57,7 +57,7 @@ def main() -> int:
                 autologin.ensure_images_exist(images)
                 autologin.wait_until(target_dt)
                 autologin.LOGGER.info("Starting UI automation test steps.")
-                _all_steps_ok, missing_steps, clicked_steps = autologin.run_sequence(
+                _all_steps_ok, missing_steps, clicked_steps, screen_locked = autologin.run_sequence(
                     images,
                     skip_last=True,
                     refresh_first=True,
@@ -75,7 +75,10 @@ def main() -> int:
                         details=details,
                     )
                 else:
-                    detail_parts = [f"No se pudo confirmar click en {autologin.STEP_LOGIN_IMAGE}."]
+                    detail_parts = []
+                    if screen_locked:
+                        detail_parts.append("La pantalla estaba BLOQUEADA (login de macOS); no se pudo continuar.")
+                    detail_parts.append(f"No se pudo confirmar click en {autologin.STEP_LOGIN_IMAGE}.")
                     if missing_steps:
                         detail_parts.append(f"Pasos no encontrados en test: {', '.join(missing_steps)}")
                     autologin.send_email_confirmation(
