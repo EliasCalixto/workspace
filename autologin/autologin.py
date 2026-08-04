@@ -91,7 +91,7 @@ LUNCH_HOUR = 12
 LUNCH_MINUTE = 30
 # Return from lunch (log back in).
 POSTLUNCH_HOUR = 13
-POSTLUNCH_MINUTE = 14
+POSTLUNCH_MINUTE = 12
 FIND_TIMEOUT_SECONDS = 20
 # How long to watch for real keyboard/mouse input (with the jiggler paused)
 # when deciding whether the user is present and lunch should be skipped.
