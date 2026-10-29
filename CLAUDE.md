@@ -7,6 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is a **multi-project workspace**, not a single app. Each top-level directory is an independent project. There is no shared build, no shared dependency manifest, and no shared virtualenv. Treat each subdirectory as its own root and `cd` into it before running anything.
 
 - `autologin/` — Python script that schedules itself to perform a UI-automated login on macOS at a fixed wall-clock time (Lima TZ).
+- `autologin_windows/` — Windows port of `autologin/` (2K monitor), same templates/schedule/emails; see its section below.
 - `macro_mac/` — Tkinter desktop app, packaged as a `.app`/`.dmg`, that generates Salesforce-case spreadsheets from templates. Versioned by folder (`v1.0/`, `v1.1/`, `v1.2/`, `beta/`); **`v1.2/` is the current line** — make changes there.
 - `templates/` — Non-code reference spreadsheets/CSVs used by support workflows. No build steps here.
 - `APM_files/` — Numbered case archives (one folder per Salesforce/APM case). Reference data, not source.
@@ -42,6 +43,24 @@ Notes when editing:
 - `caffeinate -d -i -s` keeps the display powered and blocks system sleep, but on modern macOS it does **not** stop the screen saver from starting, and with `askForPassword=1` the screen then locks — which is why a run can wake to a password lock screen and match zero steps. `keep_screen_awake()` therefore also starts `_JIGGLER` (`_ActivityJiggler`), a daemon thread that moves the cursor every `JIGGLE_INTERVAL_SECONDS` (10s) to reset the HID idle timer so the screen saver never engages during the long wait. `_nudge_cursor` uses `CGWarpMouseCursorPosition` (a real ±2px cursor reposition, direction alternating so it never drifts) + a posted event — **not** a purely synthetic `CGEventPost` move: testing showed synthetic-only events can fail to register as activity for ~55s at a stretch (idle climbed past the lock threshold and the screen locked), whereas the real warp resets idle every call (measured ceiling <10s). Don't revert to synthetic-only, and don't lengthen the interval much. `run_sequence` pauses the jiggler while clicking (so nudges don't move the cursor mid-click) and resumes it after. It also calls `wake_display()` + `screen_is_locked()` first; if the screen is locked it aborts early and the confirmation email says so (the 4th return value, `screen_locked`). The jiggler cannot recover a screen the user locked *manually* before leaving — the Mac must be left unlocked when starting the script.
 - After the sequence runs, the script intentionally calls `wait_until_manual_stop()` and blocks forever so `caffeinate` keeps holding the machine awake. This is by design; killing it with Ctrl+C is the expected exit path.
 - Gmail credentials are embedded in `send_email_confirmation` as an app password. If it stops working, rotate the app password and update the literal in both `autologin.py` and the email body strings.
+
+## autologin_windows/
+
+Windows port of `autologin/` for the user's 2K (2560x1440) PC. Same `build_jobs()` schedule, sequences, PNG templates (copied from `autologin/`), presence skip and email states; the job/email logic is kept line-for-line in sync with the Mac file, so port behavior changes to both. Only the OS layer differs, all via `ctypes` (no `pyautogui`/`pyobjc`):
+
+- Keep-awake: `SetThreadExecutionState(ES_CONTINUOUS|ES_SYSTEM_REQUIRED|ES_DISPLAY_REQUIRED)` replaces `caffeinate`; it does not stop the screen saver, so `_JIGGLER` still runs. `_nudge_cursor` does `SetCursorPos` **and** a `SendInput` absolute move — `SetCursorPos` alone doesn't reset `GetLastInputInfo`.
+- `_enable_dpi_awareness()` runs at import (per-monitor v2) so screenshots and `SetCursorPos` are both in physical pixels at 125%/150% scaling. Don't remove it or move it after any screen grab.
+- Matching: `ImageGrab.grab(all_screens=True)` of the whole virtual desktop (origin from `SM_XVIRTUALSCREEN`, may be negative) + OpenCV over a wider `TEMPLATE_SCALES` sweep, because the PNGs are Retina 2x captures (`step_lunch.png` is 1x). `MATCH_CONFIDENCE` is 0.80 for cross-OS text rendering.
+- Lock detection: `OpenInputDesktop` fails / desktop name ≠ `Default` → locked. Idle: `GetLastInputInfo`.
+- `autologintest.py --check` prints each template's best score/scale without clicking — use it to validate templates on the Windows screen. Requirements in `requirements.txt` (`opencv-python`, `numpy`, `pillow`, `tzdata`).
+- The Gmail app password literal is duplicated here too; rotate it in both `autologin/autologin.py` and `autologin_windows/autologin.py`.
+
+```bash
+cd autologin_windows
+py -m pip install -r requirements.txt
+py autologintest.py --check
+py autologin.py
+```
 
 ## macro_mac/
 
