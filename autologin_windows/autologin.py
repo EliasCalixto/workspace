@@ -17,6 +17,7 @@ scaling of 100%/125%/150%.
 import argparse
 import ctypes
 import logging
+import os
 import sys
 import threading
 import time
@@ -27,11 +28,12 @@ from email.header import Header
 from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from typing import TYPE_CHECKING, Any, NoReturn
 
 
 def send_email_confirmation(success=True, *, is_test: bool = False, details: str = "", label=None) -> None:
     remitente = "eliascalixto989@gmail.com"
-    password = "memf ogpf rwbl qcdk"
+    password = os.environ.get("AUTOLOGIN_GMAIL_APP_PASSWORD", "")
     destinatario = "eliascalixto989@gmail.com"
 
     run_type = label or ("Test" if is_test else "Autologin")
@@ -152,11 +154,18 @@ SM_CYVIRTUALSCREEN = 79
 DESKTOP_SWITCHDESKTOP = 0x0100
 UOI_NAME = 2
 
-if IS_WINDOWS:
+# The ctypes Win32 names (WinDLL, windll) only exist in the type stubs for
+# Windows, so an editor on macOS/Linux flags them as errors. Reaching them via
+# this Any-typed alias keeps the runtime identical and the editor quiet.
+_ctypes: Any = ctypes
+
+# TYPE_CHECKING makes the editor treat everything below as always defined (no
+# "possibly unbound" warnings); at runtime the block only runs on Windows.
+if TYPE_CHECKING or IS_WINDOWS:
     from ctypes import wintypes
 
-    user32 = ctypes.WinDLL("user32", use_last_error=True)
-    kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    user32: Any = _ctypes.WinDLL("user32", use_last_error=True)
+    kernel32: Any = _ctypes.WinDLL("kernel32", use_last_error=True)
 
     ULONG_PTR = ctypes.c_size_t
 
@@ -223,17 +232,17 @@ def _enable_dpi_awareness() -> None:
     if not IS_WINDOWS:
         return
     try:  # Windows 10 1703+: per-monitor v2.
-        if ctypes.windll.user32.SetProcessDpiAwarenessContext(ctypes.c_void_p(-4)):
+        if _ctypes.windll.user32.SetProcessDpiAwarenessContext(ctypes.c_void_p(-4)):
             return
     except Exception:
         pass
     try:  # Windows 8.1+: per-monitor.
-        ctypes.windll.shcore.SetProcessDpiAwareness(2)
+        _ctypes.windll.shcore.SetProcessDpiAwareness(2)
         return
     except Exception:
         pass
     try:
-        ctypes.windll.user32.SetProcessDPIAware()
+        _ctypes.windll.user32.SetProcessDPIAware()
     except Exception:
         pass
 
@@ -369,6 +378,9 @@ def wait_until(target_dt: datetime) -> None:
 # --- Keep awake / anti-lock ---------------------------------------------------
 
 
+_nudge_sign = 1
+
+
 def _nudge_cursor() -> None:
     """Move the cursor a couple of pixels so Windows registers user input.
 
@@ -381,9 +393,10 @@ def _nudge_cursor() -> None:
     """
     if not IS_WINDOWS:
         return
+    global _nudge_sign
     try:
-        sign = -getattr(_nudge_cursor, "_sign", 1)
-        _nudge_cursor._sign = sign
+        _nudge_sign = -_nudge_sign
+        sign = _nudge_sign
         x, y = _cursor_pos()
         target = (x + 2 * sign, y)
         user32.SetCursorPos(*target)
@@ -694,7 +707,7 @@ def run_sequence(images, skip_last: bool = False, refresh_first: bool = False):
     return len(missing_steps) == 0, missing_steps, clicked_steps, False
 
 
-def wait_until_manual_stop() -> None:
+def wait_until_manual_stop() -> NoReturn:
     LOGGER.info("Autologin finalizado. Manteniendo el script activo. Presiona Ctrl+C para detener.")
     while True:
         time.sleep(300)
@@ -719,7 +732,7 @@ def run_job(job) -> bool:
     if job.skip_if_user_active and user_is_active():
         detail = "Omitido: estabas usando la PC en ese momento (se detecto actividad de teclado/mouse)."
         LOGGER.info("%s: %s", job.label, detail)
-        send_email_confirmation(success=None, label=job.label, details=detail)
+        send_email_confirmation(success=None, label=job.label, details=detail) # type: ignore
         return False
 
     LOGGER.info("Iniciando job: %s", job.label)
@@ -767,7 +780,7 @@ def main() -> int:
                             "asi que no hay lunch del cual regresar."
                         )
                         LOGGER.info("%s: %s", job.label, detail)
-                        send_email_confirmation(success=None, label=job.label, details=detail)
+                        send_email_confirmation(success=None, label=job.label, details=detail) # type: ignore
                         results[job.key] = False
                         continue
                     results[job.key] = run_job(job)
