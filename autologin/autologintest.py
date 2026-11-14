@@ -43,7 +43,7 @@ def main() -> int:
     images = autologin.resolve_images(autologin.IMAGE_SEQUENCE)
 
     hour, minute = args.time
-    target_dt = autologin.next_run_datetime(hour, minute, autologin.TARGET_TZ)
+    target_dt = autologin.next_daily_datetime(hour, minute, autologin.TARGET_TZ)
     autologin.LOGGER.info(
         "Test automation scheduled for %s (skipping final submit click).",
         target_dt.strftime("%Y-%m-%d %H:%M %Z"),
@@ -88,12 +88,13 @@ def main() -> int:
                     )
             except KeyboardInterrupt:
                 raise
-            except SystemExit as exc:
-                run_result_code = exc.code if isinstance(exc.code, int) else 1
+            except (SystemExit, autologin.DependencyError) as exc:
+                code = getattr(exc, "code", 1)
+                run_result_code = code if isinstance(code, int) else 1
                 autologin.send_email_confirmation(
                     success=False,
                     is_test=True,
-                    details=f"Test abortado con codigo: {exc.code}",
+                    details=f"Test abortado: {exc}",
                 )
             except Exception as exc:
                 autologin.LOGGER.exception("Test automation failed with an unexpected error.")
