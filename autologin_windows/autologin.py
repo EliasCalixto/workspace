@@ -34,7 +34,7 @@ from email.header import Header
 from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Optional
  
 try:  # Python 3.9+
     from zoneinfo import ZoneInfo
@@ -53,7 +53,7 @@ EMAIL_DESTINATARIO = "eliascalixto989@gmail.com"
 EMAIL_INTENTOS = 3
  
  
-def send_email_confirmation(success=True, *, is_test: bool = False, details: str = "", label=None) -> bool:
+def send_email_confirmation(success: Optional[bool] = True, *, is_test: bool = False, details: str = "", label=None) -> bool:
     """Envia la notificacion. Devuelve True si se envio."""
     remitente = EMAIL_REMITENTE
     password = EMAIL_PASSWORD.replace(" ", "")

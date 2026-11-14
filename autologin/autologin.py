@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# pyright: reportAttributeAccessIssue=false, reportFunctionMemberAccess=false
 """macOS autologin: keeps the Mac awake and marks the BMS labor events
 (07:25 login, 12:30 lunch, 13:12 back from lunch, and Log Out at 18:15 on
 Mondays / 17:45 Tuesday-Friday, Lima time), Monday to Friday.
@@ -33,6 +34,7 @@ from email.header import Header
 from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from typing import Optional
 
 try:  # Python 3.9+
     from zoneinfo import ZoneInfo
@@ -53,7 +55,7 @@ EMAIL_DESTINATARIO = "eliascalixto989@gmail.com"
 EMAIL_INTENTOS = 3
 
 
-def send_email_confirmation(success=True, *, is_test: bool = False, details: str = "", label=None) -> bool:
+def send_email_confirmation(success: Optional[bool] = True, *, is_test: bool = False, details: str = "", label=None) -> bool:
     """Envia la notificacion. Devuelve True si se envio. Nunca lanza excepciones."""
     remitente = EMAIL_REMITENTE
     password = EMAIL_PASSWORD.replace(" ", "")
