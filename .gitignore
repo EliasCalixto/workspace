@@ -4,3 +4,5 @@ __pycache__
 .virtual_documents
 .DS_Store
 autologin*/autologin.log*
+autologin/google_token.py
+autologin_windows/google_token.py

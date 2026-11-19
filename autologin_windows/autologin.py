@@ -24,6 +24,7 @@ import argparse
 import ctypes
 import logging
 import os
+import dotenv
 import sys
 import threading
 import time
@@ -35,6 +36,8 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Optional
+
+from google_token import GOOGLE_TOKEN
  
 try:  # Python 3.9+
     from zoneinfo import ZoneInfo
@@ -48,7 +51,7 @@ IS_WINDOWS = sys.platform == "win32"
 # --- Email --------------------------------------------------------------------
  
 EMAIL_REMITENTE = "eliascalixto989@gmail.com"
-EMAIL_PASSWORD = "qvul zfxv tmai wips"  # contraseña de aplicacion de Gmail (los espacios se quitan solos)
+EMAIL_PASSWORD = GOOGLE_TOKEN
 EMAIL_DESTINATARIO = "eliascalixto989@gmail.com"
 EMAIL_INTENTOS = 3
  

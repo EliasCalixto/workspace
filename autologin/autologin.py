@@ -22,6 +22,7 @@ import argparse
 import logging
 import logging.handlers
 import os
+import dotenv
 import re
 import subprocess
 import sys
@@ -35,6 +36,8 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
+
+from google_token import GOOGLE_TOKEN
 
 try:  # Python 3.9+
     from zoneinfo import ZoneInfo
@@ -50,7 +53,7 @@ EMAIL_REMITENTE = "eliascalixto989@gmail.com"
 # Contraseña de aplicacion de Gmail (la misma que usa autologin_windows). Los
 # espacios se quitan solos. Si existe la variable de entorno
 # AUTOLOGIN_GMAIL_APP_PASSWORD, se usa esa en su lugar.
-EMAIL_PASSWORD = os.environ.get("AUTOLOGIN_GMAIL_APP_PASSWORD") or "qvul zfxv tmai wips"
+EMAIL_PASSWORD = GOOGLE_TOKEN
 EMAIL_DESTINATARIO = "eliascalixto989@gmail.com"
 EMAIL_INTENTOS = 3
 
