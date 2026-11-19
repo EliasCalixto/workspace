@@ -22,7 +22,6 @@ import argparse
 import logging
 import logging.handlers
 import os
-import dotenv
 import re
 import subprocess
 import sys
