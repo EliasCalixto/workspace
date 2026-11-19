@@ -24,7 +24,6 @@ import argparse
 import ctypes
 import logging
 import os
-import dotenv
 import sys
 import threading
 import time
