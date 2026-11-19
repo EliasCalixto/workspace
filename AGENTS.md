@@ -78,6 +78,18 @@ python3 main.py
 
 No code, no build. `templates/` holds master spreadsheets referenced by support workflows; `APM_files/` is per-case archive data (numbered folders, some zipped). Don't edit these to "clean up" — they are working references.
 
+For every Expedia case, move working files received in Downloads or generated in temporary/output folders into the real `APM_files/<case>/` folder; do not leave the deliverable only outside the case folder or leave duplicate working copies behind. Verify the destination and file contents after moving. Preserve original request files separately from completed partner responses. If a destination already exists, compare contents before replacing it; preserve differing versions.
+
+Work on and save case files locally on the user's Mac. Give copy-ready email templates and Case Comments directly in chat in English; do not create separate text files for them. In chat, share any non-APM file the user needs to send to a recipient, and keep a local copy in the case folder. Keep APM imports, exports, and their results local unless the user explicitly asks for them in chat. Avoid auxiliary deliverables unless the user asks or the case needs them.
+
+For every case, move downloaded APM results into the matching case or case-part folder: import results go in `Import Results/` and export results go in `Export Results/`. Verify the destination and reconcile the result with the submitted file. Keep one copy of identical results. When a new attempt produces different results under the same filename, preserve the older result with a version suffix.
+
+Keep each Expedia case's existing Notion page updated as work progresses and at closure. Record confirmed milestones, results and retries, partner outreach status, and current next steps. Distinguish prepared work from completed work and record what remains to be verified.
+
+End every case response with a visually distinct **Siguientes pasos** block in Spanish. Use a short numbered list in execution order and bold each action. Use at most one subtle, relevant emoji for the block (such as 📋 or → as a plain symbol); avoid bright status circles and decorative emoji on individual steps. State who acts or what must happen first when useful. Keep this block last and use standard Markdown that renders in chat.
+
+Name every case import `<case> IMPORT <order> <description>.xlsx`, using the actual import sequence and dependencies in that case. Always include the order number, continue the existing sequence, and do not renumber already submitted imports. Use decimal substeps when appropriate for dependent imports. For Stanzia 159363172, EQC is IMPORT 9, so Rooms is `159363172 IMPORT 10 RT&RP Rooms.xlsx`; Rates follows after the Rooms result supplies the Room Type IDs.
+
 When preparing an APM case file, **always load and verify every requested EID before handing it off**. A case folder or copied template is not "prepared" if its `Hotel ID` / `Account ID` rows are blank. Clear any sample data when appropriate, preserve legitimate template defaults, then verify the final list and order against the request before reporting completion.
 
 For `BMC/BMC1/IMPORT 1 BMC Cloud Property.xlsx`, use the contract target model rather than blindly mirroring every PS&NS field. In particular, when the current row is `Merchant`, leave `Commissions Charged for Taxes`, `Commissions Charged for Fees`, and `Commissions Charged for Cancellations` blank; do not copy the EC commission flags from PS&NS. Set target-model fields according to the requested conversion (a `Dual` row may need `Target Hotel Business Model=Merchant`).
