@@ -28,15 +28,14 @@ import sys
 import threading
 import time
 import smtplib
+import ssl
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.header import Header
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Optional
-
-from google_token import GOOGLE_TOKEN
  
 try:  # Python 3.9+
     from zoneinfo import ZoneInfo
@@ -50,7 +49,6 @@ IS_WINDOWS = sys.platform == "win32"
 # --- Email --------------------------------------------------------------------
  
 EMAIL_REMITENTE = "eliascalixto989@gmail.com"
-EMAIL_PASSWORD = GOOGLE_TOKEN
 EMAIL_DESTINATARIO = "eliascalixto989@gmail.com"
 EMAIL_INTENTOS = 3
  
@@ -58,7 +56,21 @@ EMAIL_INTENTOS = 3
 def send_email_confirmation(success: Optional[bool] = True, *, is_test: bool = False, details: str = "", label=None) -> bool:
     """Envia la notificacion. Devuelve True si se envio."""
     remitente = EMAIL_REMITENTE
-    password = EMAIL_PASSWORD.replace(" ", "")
+    password = "".join(os.getenv("AUTOLOGIN_GMAIL_APP_PASSWORD", "").split())
+    if not password:
+        try:
+            from google_token import GOOGLE_TOKEN
+        except (ImportError, OSError, SyntaxError) as exc:
+            LOGGER.error(
+                "Configura AUTOLOGIN_GMAIL_APP_PASSWORD o GOOGLE_TOKEN en google_token.py (%s).",
+                type(exc).__name__,
+            )
+            return False
+        if isinstance(GOOGLE_TOKEN, str):
+            password = "".join(GOOGLE_TOKEN.split())
+    if not password or not password.isascii():
+        LOGGER.error("Configura una contraseña de aplicación de Gmail válida.")
+        return False
     destinatario = EMAIL_DESTINATARIO
  
     run_type = label or ("Test" if is_test else "Autologin")
@@ -89,33 +101,54 @@ def send_email_confirmation(success: Optional[bool] = True, *, is_test: bool = F
         body_lines.append(f"Detalle: {details}")
     mensaje.attach(MIMEText("\n".join(body_lines), "plain", "utf-8"))
  
-    # Prueba 587 (STARTTLS) y, si falla, 465 (SSL). Reintenta varias veces por
-    # si la red falla un momento.
+    # Gmail admite STARTTLS en 587 y TLS implícito en 465.
+    tls_context = ssl.create_default_context()
     for intento in range(1, EMAIL_INTENTOS + 1):
         for port in (587, 465):
+            servidor = None
+            etapa = "conexión"
             try:
                 if port == 465:
-                    servidor = smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=30)
+                    etapa = "conexión/TLS"
+                    servidor = smtplib.SMTP_SSL(
+                        "smtp.gmail.com", port, timeout=30, context=tls_context
+                    )
                 else:
-                    servidor = smtplib.SMTP("smtp.gmail.com", 587, timeout=30)
-                    servidor.ehlo()
-                    servidor.starttls()
-                    servidor.ehlo()
-                with servidor:
-                    servidor.login(remitente, password)
-                    servidor.send_message(mensaje)
+                    servidor = smtplib.SMTP("smtp.gmail.com", port, timeout=30)
+                    etapa = "STARTTLS"
+                    servidor.starttls(context=tls_context)
+                etapa = "autenticación"
+                servidor.login(remitente, password)
+                etapa = "envío"
+                servidor.send_message(mensaje)
+            except smtplib.SMTPAuthenticationError as exc:
+                LOGGER.warning(
+                    "Gmail rechazó la autenticación SMTP (código %d, puerto %d, intento %d).",
+                    exc.smtp_code, port, intento,
+                )
+                if 500 <= exc.smtp_code < 600:
+                    return False
+            except OSError as exc:
+                LOGGER.warning(
+                    "Fallo SMTP en %s (puerto %d, intento %d): %s: %s",
+                    etapa, port, intento, type(exc).__name__, exc,
+                )
+                LOGGER.debug("Detalle del fallo SMTP", exc_info=True)
+            else:
                 LOGGER.info(
                     "Email enviado (puerto %d, intento %d): %s %s",
                     port, intento, run_type, status_text,
                 )
                 return True
-            except smtplib.SMTPAuthenticationError as exc:
-                LOGGER.error(
-                    "Gmail rechazo la contraseña de aplicacion (genera una nueva): %s", exc
-                )
-                return False  # reintentar no sirve si la contraseña es invalida
-            except Exception:
-                LOGGER.exception("Fallo envio de email por puerto %d (intento %d)", port, intento)
+            finally:
+                if servidor is not None:
+                    try:
+                        servidor.quit()
+                    except OSError:
+                        LOGGER.debug("No se pudo cerrar la sesión SMTP con QUIT.", exc_info=True)
+                    finally:
+                        with suppress(OSError):
+                            servidor.close()
         if intento < EMAIL_INTENTOS:
             time.sleep(10)
     LOGGER.error("No se pudo enviar el email tras %d intentos.", EMAIL_INTENTOS)
@@ -819,9 +852,10 @@ def run_job(job) -> bool:
     LOGGER.info("Iniciando job: %s", job.label)
     _all_ok, missing_steps, clicked_steps, screen_locked = run_sequence(images, refresh_first=True)
     if job.success_image in clicked_steps:
-        details = "Marcacion confirmada (Submit ejecutado)."
+        details = "Se ejecutó el clic en Submit."
         if missing_steps:
             details += f" Pasos opcionales no encontrados: {', '.join(missing_steps)}"
+        LOGGER.info("%s: %s", job.label, details)
         send_email_confirmation(success=True, label=job.label, details=details)
         return True
     detail_parts = []
@@ -830,7 +864,9 @@ def run_job(job) -> bool:
     detail_parts.append(f"No se pudo confirmar click en {job.success_image}.")
     if missing_steps:
         detail_parts.append(f"Pasos no encontrados: {', '.join(missing_steps)}")
-    send_email_confirmation(success=False, label=job.label, details=" ".join(detail_parts))
+    details = " ".join(detail_parts)
+    LOGGER.warning("%s: %s", job.label, details)
+    send_email_confirmation(success=False, label=job.label, details=details)
     return False
  
  
@@ -899,4 +935,3 @@ def main() -> int:
  
 if __name__ == "__main__":
     sys.exit(main())
- 

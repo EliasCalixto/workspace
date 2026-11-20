@@ -42,8 +42,20 @@ py autologin.py                  :: espera a 07:25 / 12:30 / 13:12 (Lima) y marc
 py autologintest.py --time 14:30 :: prueba solo la secuencia de la mañana, sin Submit
 ```
 
-Igual que en Mac: después de los tres eventos el script queda activo (para
-mantener la PC despierta) hasta `Ctrl+C`.
+Igual que en Mac, el programa sigue activo hasta `Ctrl+C`. De lunes a viernes
+también programa la salida a las 18:15 el lunes y a las 17:45 de martes a viernes.
+
+## Probar el correo de confirmación
+
+Configura la contraseña de aplicación de Gmail en la variable de entorno
+`AUTOLOGIN_GMAIL_APP_PASSWORD` o como `GOOGLE_TOKEN` en un `google_token.py`
+local junto a `autologin.py`. Prueba solo el correo con `py autologin.py --test-email`.
+En macOS usa `python3 autologin.py --test-email` desde la carpeta `autologin`.
+
+El log de Windows indica en qué etapa falló SMTP y qué puerto se usó. Si aparece
+`SMTPServerDisconnected` durante la autenticación, la sesión se cerró antes de
+recibir una respuesta de Gmail. Un rechazo explícito se registra con su código
+SMTP. Para ver la traza completa de una desconexión, agrega `--verbose`.
 
 ## Notas
 
