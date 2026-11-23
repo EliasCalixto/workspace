@@ -118,7 +118,12 @@ def send_email_confirmation(success: Optional[bool] = True, *, is_test: bool = F
                     etapa = "STARTTLS"
                     servidor.starttls(context=tls_context)
                 etapa = "autenticación"
-                servidor.login(remitente, password)
+                # Gmail respondió a AUTH LOGIN en dos pasos cuando AUTH PLAIN
+                # cerraba la conexión sin devolver un código SMTP.
+                servidor.ehlo_or_helo_if_needed()
+                servidor.user = remitente
+                servidor.password = password
+                servidor.auth("LOGIN", servidor.auth_login, initial_response_ok=False)
                 etapa = "envío"
                 servidor.send_message(mensaje)
             except smtplib.SMTPAuthenticationError as exc:
@@ -143,7 +148,8 @@ def send_email_confirmation(success: Optional[bool] = True, *, is_test: bool = F
             finally:
                 if servidor is not None:
                     try:
-                        servidor.quit()
+                        if servidor.sock is not None:
+                            servidor.quit()
                     except OSError:
                         LOGGER.debug("No se pudo cerrar la sesión SMTP con QUIT.", exc_info=True)
                     finally:
